@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebaseAdmin';
 
+export const dynamic = 'force-dynamic';
+
 // POST /api/auth/login
 // Verifies a Firebase ID token and returns the Firestore user profile.
 // Used optionally for server-side token verification.

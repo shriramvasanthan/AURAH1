@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebaseAdmin';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 // POST /api/auth/register
 // Called AFTER Firebase Auth user is created on the client.
 // Saves the user profile to BOTH Firestore and Prisma (SQL).

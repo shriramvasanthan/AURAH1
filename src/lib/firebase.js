@@ -30,13 +30,26 @@ if (isConfigValid) {
 export const auth = isConfigValid ? getAuth(app) : {
     onAuthStateChanged: () => () => { },
     currentUser: null,
+    signInWithEmailAndPassword: () => Promise.reject('Firebase not initialized'),
+    createUserWithEmailAndPassword: () => Promise.reject('Firebase not initialized'),
+    signOut: () => Promise.resolve(),
 };
 
+const dummyColl = () => ({
+    doc: () => ({
+        get: () => Promise.resolve({ exists: false, data: () => ({}) }),
+        set: () => Promise.resolve(),
+        update: () => Promise.resolve(),
+        onSnapshot: () => () => { },
+    }),
+    where: () => ({ get: () => Promise.resolve({ docs: [] }) }),
+});
+
 export const db = isConfigValid ? getFirestore(app) : new Proxy({}, {
-    get: () => () => ({
-        doc: () => ({ get: () => Promise.resolve({ exists: false }) }),
-        collection: () => ({ doc: () => ({ get: () => Promise.resolve({ exists: false }) }) }),
-    })
+    get: (target, prop) => {
+        if (prop === 'collection') return dummyColl;
+        return () => ({ doc: () => ({ get: () => Promise.resolve({ exists: false }) }) });
+    }
 });
 
 export default app;

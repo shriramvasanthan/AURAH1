@@ -21,8 +21,18 @@ function ProductsContent() {
         const url = activeCategory === 'All' ? '/api/products' : `/api/products?category=${activeCategory}`;
         fetch(url)
             .then((r) => r.json())
-            .then((data) => { setProducts(data); setLoading(false); })
-            .catch(() => setLoading(false));
+            .then((data) => {
+                if (Array.isArray(data)) setProducts(data);
+                else {
+                    console.error('Products fetch failed:', data);
+                    setProducts([]);
+                }
+                setLoading(false);
+            })
+            .catch(() => {
+                setLoading(false);
+                setProducts([]);
+            });
     }, [activeCategory]);
 
     useEffect(() => {

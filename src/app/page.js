@@ -36,7 +36,10 @@ export default function HomePage() {
   useEffect(() => {
     fetch('/api/products?featured=true')
       .then((r) => r.json())
-      .then(setProducts)
+      .then((data) => {
+        if (Array.isArray(data)) setProducts(data);
+        else console.error('Featured products fetch failed:', data);
+      })
       .catch(console.error);
   }, []);
 

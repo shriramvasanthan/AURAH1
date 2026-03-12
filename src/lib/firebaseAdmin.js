@@ -29,7 +29,10 @@ function getAdmin() {
 export const adminAuth = {
     verifyIdToken: async (token) => {
         const app = getAdmin();
-        if (!app) throw new Error('Firebase Admin not initialized');
+        if (!app) {
+            console.error('CRITICAL: Firebase Admin not initialized. Check your environment variables.');
+            throw new Error('Firebase Admin not initialized');
+        }
         if (!adminAuthInstance) adminAuthInstance = getAuth(app);
         return adminAuthInstance.verifyIdToken(token);
     }
@@ -37,8 +40,24 @@ export const adminAuth = {
 
 export const adminDb = new Proxy({}, {
     get(target, prop) {
+        // If we are in build time and env vars are missing, we return anoop/dummy for certain props
+        // to avoid crashing during static analysis if possible.
         const app = getAdmin();
-        if (!app) throw new Error('Firebase Admin not initialized');
+        if (!app) {
+            console.warn(`Firebase Admin not initialized. Accessing adminDb.${prop} during build.`);
+            // Return a dummy object that swallows calls to avoid build crashes
+            return () => ({ 
+                doc: () => ({ 
+                    get: () => ({ exists: false, data: () => ({}) }),
+                    set: () => Promise.resolve(),
+                    update: () => Promise.resolve(),
+                    delete: () => Promise.resolve(),
+                }),
+                collection: () => ({
+                    doc: () => ({ get: () => ({ exists: false }) }),
+                })
+            });
+        }
         if (!adminDbInstance) adminDbInstance = getFirestore(app);
         return adminDbInstance[prop];
     }

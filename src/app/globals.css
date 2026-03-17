@@ -1,64 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap');
-
 /* ===== CSS Variables — Earthy Natural ===== */
 :root {
-  --gold: #C0522A;
-  --gold-light: #D96A38;
-  --gold-dark: #8B3C1E;
-  --gold-shimmer: #E8A030;
-  --black: #F5EDD6;
-  --dark: #EDE4CC;
-  --dark-2: #E5D9B8;
-  --dark-3: #DBCEA6;
-  --dark-4: #D2C394;
-  --white: #2C1A0E;
-  --muted: #8B7360;
-  --font-display: 'Cinzel', serif;
-  --font-body: 'Montserrat', sans-serif;
+  --gold: #c0522a;          /* Primary Accent */
+  --gold-light: #d96a38;
+  --gold-dark: #8b3c1e;
+  --gold-shimmer: #e8a030;
+  --black: #f5edd6;         /* Background (Light Cream) */
+  --dark: #ede4cc;          /* Secondary Background */
+  --dark-2: #e5d9b8;
+  --dark-3: #dbcea6;
+  --dark-4: #d2c394;
+  --white: #2c1a0e;         /* Text Color (Dark Brown) */
+  --muted: #8b7360;         /* Subtext Color */
+  --accent: #c0522a;
+  --bg-warm: #f5edd6;
+  --primary: #c0522a;       /* Added missing primary */
+  --primary-dark: #8b3c1e;  /* Added missing primary-dark */
+
+  --font-display: "Cinzel", serif;
+  --font-body: "Montserrat", sans-serif;
+  --font-cinzel: "Cinzel", serif;
+  --font-montserrat: "Montserrat", sans-serif;
+
   --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --glow: 0 0 20px rgba(192, 82, 42, 0.25);
-  --glow-strong: 0 0 40px rgba(192, 82, 42, 0.4), 0 0 80px rgba(192, 82, 42, 0.15);
+  --glow: 0 0 20px rgba(192, 82, 42, .25);
+  --glow-strong: 0 0 40px rgba(192, 82, 42, .4), 0 0 80px rgba(192, 82, 42, .15);
+
+  --section-padding: 120px 0;
+  --container-max: 1400px;
 }
 
-/* ===== Reset ===== */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
-  overflow-x: hidden;
-}
-
+/* Base Reset */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { overflow-x: hidden; scroll-behavior: auto !important; }
 body {
   font-family: var(--font-body);
-  background-color: var(--black);
-  color: var(--white);
+  background-color: var(--bg-warm);
+  color: var(--white); /* Updated from --black for better contrast */
   overflow-x: hidden;
-  line-height: 1.6;
+  line-height: 1.8;
   cursor: none;
+  min-height: 100vh;
 }
+
 
 /* ===== Custom Scrollbar ===== */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 10px; /* Increased for visibility */
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--dark);
+  background: var(--dark-2); /* Darker track for contrast */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(192, 82, 42, 0.5);
-  border-radius: 3px;
+  background: var(--gold);
+  border-radius: 5px;
+  border: 2px solid var(--dark-2); /* Padding effect */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--gold);
+  background: var(--gold-dark);
 }
 
 /* ===== Custom Cursor ===== */
@@ -106,7 +107,7 @@ h5 {
   font-family: var(--font-display);
   font-weight: 700;
   line-height: 1.15;
-  color: var(--white);
+  color: var(--black);
 }
 
 .gold-text {
@@ -125,8 +126,8 @@ h5 {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%);
-  color: #FAF4E8;
+  background: var(--primary);
+  color: white;
   border: none;
   padding: 14px 32px;
   font-family: var(--font-display);
@@ -135,7 +136,7 @@ h5 {
   letter-spacing: 0.15em;
   text-transform: uppercase;
   cursor: none;
-  border-radius: 3px;
+  border-radius: 0;
   transition: var(--transition);
   position: relative;
   overflow: hidden;
@@ -670,11 +671,11 @@ h5 {
 }
 
 .navbar-scrolled {
-  background: rgba(245, 237, 214, 0.96);
+  background: var(--bg-warm);
   backdrop-filter: blur(20px);
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(192, 82, 42, 0.15);
-  box-shadow: 0 4px 24px rgba(44, 26, 14, 0.1);
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(139, 69, 19, 0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.02);
 }
 
 .nav-container {
@@ -697,22 +698,20 @@ h5 {
 
 .logo-symbol {
   position: absolute;
-  font-size: 2rem;
-  color: var(--gold);
-  opacity: 0.12;
-  transform: translateX(-8px);
+  font-size: 2.2rem;
+  color: var(--accent);
+  opacity: 0.15;
+  left: -30px;
+  top: -5px;
   pointer-events: none;
 }
 
 .logo-text {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 900;
-  letter-spacing: 0.3em;
-  background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-shimmer));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  letter-spacing: 0.4em;
+  color: var(--primary);
   line-height: 1;
 }
 
@@ -1681,7 +1680,7 @@ h5 {
 .register-link {
     text-align: center;
     font-size: 0.82rem;
-    color: var(--muted);
+    color: var(--white); /* High contrast dark brown */
     margin-bottom: 16px;
 }
 
@@ -1788,7 +1787,7 @@ h5 {
 .login-cta {
     text-align: center;
     font-size: 0.82rem;
-    color: var(--muted);
+    color: var(--white); /* High contrast dark brown */
     margin-top: 20px;
 }
 
@@ -1810,7 +1809,7 @@ h5 {
 
 .dash-header {
     position: relative;
-    padding: 110px 0 0;
+    padding: 180px 0 0; /* Further increased to clear fixed navbar and avoid overlap */
     border-bottom: 1px solid rgba(192, 82, 42, 0.12);
     margin-bottom: 48px;
 }
@@ -2279,4 +2278,36 @@ h5 {
     .profile-card {
         padding: 32px 24px;
     }
+}
+/* ===== Redesign Utilities ===== */
+.liquid-filter {
+  filter: url('#liquid-filter');
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.magnetic-wrap {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes liquid-wash {
+  0% { transform: translateY(100%) scaleY(2); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+
+.liquid-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--gold);
+  z-index: 999999;
+  transform: translateY(100%);
+  pointer-events: none;
+}
+
+.liquid-overlay.active {
+  animation: liquid-wash 1.2s cubic-bezier(0.85, 0, 0.15, 1) forwards;
+  pointer-events: all;
 }

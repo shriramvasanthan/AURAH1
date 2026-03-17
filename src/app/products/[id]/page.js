@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
+import { formatPrice } from '@/lib/utils';
 
 export default function ProductDetailPage({ params }) {
   const { id } = params;
@@ -131,7 +132,7 @@ export default function ProductDetailPage({ params }) {
               <h1 className="detail-name">{product.name}</h1>
 
               <div className="detail-price-row">
-                <span className="detail-price">${product.price.toFixed(2)}</span>
+                <span className="detail-price">{formatPrice(product.price)}</span>
                 <span className="detail-unit">/ {product.unit}</span>
               </div>
 
@@ -167,7 +168,7 @@ export default function ProductDetailPage({ params }) {
                   </div>
 
                   <div className="cart-total-line">
-                    Subtotal: <strong>${(product.price * qty).toFixed(2)}</strong>
+                    Subtotal: <strong>{formatPrice(product.price * qty)}</strong>
                   </div>
 
                   <div className="add-actions">

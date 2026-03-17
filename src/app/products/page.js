@@ -3,12 +3,13 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/ProductCard';
+import CategoryEffects from '@/components/CategoryEffects';
 import { Suspense } from 'react';
 
 function ProductsContent() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeCategory, setActiveCategory] = useState('All');
+    const [activeCategory, setActiveCategory] = useState('ALL PRODUCTS');
     const searchParams = useSearchParams();
 
     useEffect(() => {
@@ -18,7 +19,7 @@ function ProductsContent() {
 
     useEffect(() => {
         setLoading(true);
-        const url = activeCategory === 'All' ? '/api/products' : `/api/products?category=${activeCategory}`;
+        const url = activeCategory === 'ALL PRODUCTS' ? '/api/products' : `/api/products?category=${activeCategory}`;
         fetch(url)
             .then((r) => r.json())
             .then((data) => {
@@ -45,17 +46,18 @@ function ProductsContent() {
         return () => observer.disconnect();
     }, [products]);
 
-    const categories = ['All', 'Spices', 'Nuts'];
+    const categories = ['ALL PRODUCTS', 'Spices', 'Nuts'];
 
     return (
         <>
+            <CategoryEffects category={activeCategory} />
             {/* Page Header */}
             <div className="page-header">
                 <div className="page-header-bg" />
                 <div className="container">
                     <div className="section-label" style={{ justifyContent: 'center' }}>Our Collection</div>
                     <h1 className="page-title">
-                        <span className="gold-text">All</span> Products
+                        <span className="gold-text">{activeCategory.toUpperCase()}</span>
                     </h1>
                     <p className="page-subtitle">
                         Explore our full range of hand-picked spices and premium nuts

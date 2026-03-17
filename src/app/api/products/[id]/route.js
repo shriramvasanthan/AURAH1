@@ -1,44 +1,28 @@
-import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
-
-export const dynamic = 'force-dynamic';
-
-export async function GET(request, { params }) {
-    try {
-        const product = await prisma.product.findUnique({
-            where: { id: parseInt(params.id) },
-        });
-
-        if (!product) {
-            return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-        }
-
-        return NextResponse.json(product);
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
-    }
-}
+import { prisma } from '@/lib/prisma';
 
 export async function PATCH(request, { params }) {
-    try {
-        const body = await request.json();
-        const product = await prisma.product.update({
-            where: { id: parseInt(params.id) },
-            data: body,
-        });
-        return NextResponse.json(product);
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
-    }
-}
+  try {
+    const id = parseInt(params.id);
+    if (isNaN(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
 
-export async function DELETE(request, { params }) {
-    try {
-        await prisma.product.delete({
-            where: { id: parseInt(params.id) },
-        });
-        return NextResponse.json({ message: 'Product deleted' });
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
-    }
+    const data = await request.json();
+    
+    // remove id from data if it's there
+    delete data.id;
+    
+    // parse numbers
+    if (data.price !== undefined) data.price = parseFloat(data.price);
+    if (data.stock !== undefined) data.stock = parseInt(data.stock);
+
+    const updatedProduct = await prisma.product.update({
+      where: { id },
+      data,
+    });
+
+    return NextResponse.json(updatedProduct);
+  } catch (error) {
+    console.error('[Product update error]', error);
+    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
+  }
 }

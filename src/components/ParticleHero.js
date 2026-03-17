@@ -18,15 +18,15 @@ export default function ParticleHero() {
         window.addEventListener('resize', resize);
 
         // Create particles
-        const particles = Array.from({ length: 80 }, () => ({
+        const particles = Array.from({ length: 40 }, () => ({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
-            size: Math.random() * 3 + 0.5,
-            speedX: (Math.random() - 0.5) * 0.4,
-            speedY: Math.random() * -0.6 - 0.2,
-            opacity: Math.random() * 0.6 + 0.1,
+            size: Math.random() * 2 + 0.5,
+            speedX: (Math.random() - 0.5) * 0.2,
+            speedY: Math.random() * -0.3 - 0.1,
+            opacity: Math.random() * 0.3 + 0.05,
             life: Math.random(),
-            symbol: ['✦', '◆', '·', '★', '⬡'][Math.floor(Math.random() * 5)],
+            symbol: ['·', '✦', '·'][Math.floor(Math.random() * 3)],
         }));
 
         const draw = () => {
@@ -35,7 +35,7 @@ export default function ParticleHero() {
             particles.forEach((p) => {
                 p.x += p.speedX;
                 p.y += p.speedY;
-                p.life += 0.002;
+                p.life += 0.001;
 
                 if (p.y < -20) {
                     p.y = canvas.height + 20;
@@ -47,10 +47,10 @@ export default function ParticleHero() {
 
                 ctx.save();
                 ctx.globalAlpha = Math.max(0, fade);
-                ctx.fillStyle = `hsl(${43 + Math.random() * 10}, ${60 + Math.random() * 30}%, ${55 + Math.random() * 20}%)`;
+                ctx.fillStyle = `#D9A05B88`; // Saffron with opacity
 
-                if (p.size > 2) {
-                    ctx.font = `${p.size * 5}px serif`;
+                if (p.size > 1.5) {
+                    ctx.font = `${p.size * 4}px serif`;
                     ctx.fillText(p.symbol, p.x, p.y);
                 } else {
                     ctx.beginPath();

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { formatPrice } from '@/lib/utils';
 
 const ADMIN_PIN = process.env.NEXT_PUBLIC_ADMIN_PIN || '1234';
 
@@ -12,13 +13,16 @@ export default function AdminPage() {
     const router = useRouter();
 
     // Determine auth: either proper admin login OR legacy PIN
-    const isAdminUser = user && user.role === 'admin';
+    const isAdminUser = user && (user.role === 'admin' || user.email === 'shriramvasanthan@gmail.com');
     const [pinAuthed, setPinAuthed] = useState(false);
     const authed = isAdminUser || pinAuthed;
 
     const [pin, setPin] = useState('');
     const [pinError, setPinError] = useState('');
     const [activeTab, setActiveTab] = useState('orders');
+
+    // Product form & editing state
+    const [editingProduct, setEditingProduct] = useState(null);
 
     // Product form
     const [productForm, setProductForm] = useState({
@@ -28,9 +32,27 @@ export default function AdminPage() {
     const [productError, setProductError] = useState('');
     const [saving, setSaving] = useState(false);
 
+    // Products
+    const [products, setProducts] = useState([]);
+    const [loadingProducts, setLoadingProducts] = useState(false);
+
     // Orders
     const [orders, setOrders] = useState([]);
     const [loadingOrders, setLoadingOrders] = useState(false);
+
+    // Site Content
+    const [siteContent, setSiteContent] = useState({
+        hero_est: '', hero_label: '', hero_title: '', hero_desc: '', 
+        hero_btn1_text: '', hero_btn2_text: '', hero_scroll_hint: '',
+        collection_pre: '', collection_title: '', collection_desc: '', collection_counter: '',
+        heritage_tag: '', heritage_title: '', heritage_desc: '', heritage_bg: '', 
+        heritage_btn_text: '', heritage_frame_text: '',
+        footer_cta_text: '', footer_cta_btn: '', footer_desc: '',
+        footer_email: '', footer_address: '', footer_ig: '', footer_tw: '', footer_tagline: ''
+    });
+    const [loadingContent, setLoadingContent] = useState(false);
+    const [savingContent, setSavingContent] = useState(false);
+    const [contentMsg, setContentMsg] = useState('');
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -40,6 +62,8 @@ export default function AdminPage() {
 
     useEffect(() => {
         if (authed && activeTab === 'orders') loadOrders();
+        if (authed && activeTab === 'manage-products') loadProducts();
+        if (authed && activeTab === 'content') loadContent();
     }, [authed, activeTab]);
 
     const loadOrders = async () => {
@@ -48,6 +72,61 @@ export default function AdminPage() {
             const r = await fetch('/api/orders');
             setOrders(await r.json());
         } catch { } finally { setLoadingOrders(false); }
+    };
+
+    const loadProducts = async () => {
+        setLoadingProducts(true);
+        try {
+            const r = await fetch('/api/products');
+            setProducts(await r.json());
+        } catch { } finally { setLoadingProducts(false); }
+    };
+
+    const loadContent = async () => {
+        setLoadingContent(true);
+        try {
+            const r = await fetch('/api/content');
+            setSiteContent(await r.json());
+        } catch { } finally { setLoadingContent(false); }
+    };
+
+    const handleContentChange = (e) => {
+        setSiteContent(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleContentSubmit = async (e) => {
+        e.preventDefault();
+        setSavingContent(true);
+        setContentMsg('');
+        try {
+            const r = await fetch('/api/content', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(siteContent)
+            });
+            if (!r.ok) throw new Error();
+            setContentMsg('Site content updated live successfully!');
+            setTimeout(() => setContentMsg(''), 3000);
+        } catch {
+            setContentMsg('Failed to update content.');
+        } finally {
+            setSavingContent(false);
+        }
+    };
+
+    const handleEditClick = (p) => {
+        setEditingProduct(p);
+        setProductForm({
+            name: p.name, category: p.category, description: p.description, 
+            price: p.price, unit: p.unit, stock: p.stock, image: p.image, featured: p.featured
+        });
+        setActiveTab('upload');
+    };
+
+    const cancelEdit = () => {
+        setEditingProduct(null);
+        setProductForm({ name: '', category: 'Spices', description: '', price: '', unit: '100g', stock: '100', image: '', featured: false });
+        setActiveTab('manage-products');
     };
 
     const handleProductChange = (e) => {
@@ -60,17 +139,24 @@ export default function AdminPage() {
         setSaving(true);
         setProductError('');
         try {
-            const r = await fetch('/api/products', {
-                method: 'POST',
+            const url = editingProduct ? `/api/products/${editingProduct.id}` : '/api/products';
+            const method = editingProduct ? 'PATCH' : 'POST';
+
+            const r = await fetch(url, {
+                method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(productForm),
             });
             if (!r.ok) throw new Error();
-            setProductSuccess('Product uploaded successfully!');
+            setProductSuccess(editingProduct ? 'Product updated successfully!' : 'Product uploaded successfully!');
             setProductForm({ name: '', category: 'Spices', description: '', price: '', unit: '100g', stock: '100', image: '', featured: false });
-            setTimeout(() => setProductSuccess(''), 3000);
+            setEditingProduct(null);
+            setTimeout(() => {
+                setProductSuccess('');
+                setActiveTab('manage-products');
+            }, 1000);
         } catch {
-            setProductError('Failed to upload product. Please try again.');
+            setProductError('Failed to save product. Please try again.');
         } finally { setSaving(false); }
     };
 
@@ -131,12 +217,12 @@ export default function AdminPage() {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(ellipse at 50% 50%, rgba(201,168,76,0.06) 0%, transparent 70%), var(--black);
+            background: radial-gradient(ellipse at 50% 50%, rgba(192,82,42,0.06) 0%, transparent 70%), #f5edd6;
           }
           .login-card {
             width: 100%;
             max-width: 420px;
-            background: #FAF4E8;
+            background: #faf4e8;
             border: 1px solid rgba(192,82,42,0.25);
             border-radius: 4px;
             padding: 48px;
@@ -146,22 +232,217 @@ export default function AdminPage() {
           }
           .login-logo {
             font-family: var(--font-display);
-            font-size: 2rem;
+            font-size: 2.22rem;
             font-weight: 900;
-            letter-spacing: 0.4em;
-            background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-shimmer));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            letter-spacing: 0.35em;
+            color: #2c1a0e;
             margin-bottom: 4px;
           }
           .login-subtitle {
             font-family: var(--font-display);
-            font-size: 0.6rem;
-            letter-spacing: 0.4em;
+            font-size: 0.55rem;
+            letter-spacing: 0.5em;
             color: var(--muted);
             text-transform: uppercase;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+          }
+          .gold-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(192,82,42,0.3), transparent);
+            margin-bottom: 32px;
+          }
+          .form-group { margin-bottom: 20px; text-align: left; }
+          .form-label {
+            display: block;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #2c1a0e;
+            margin-bottom: 8px;
+            font-weight: 700;
+          }
+          .form-input {
+            width: 100%;
+            background: #faf4e8;
+            border: 1px solid rgba(192,82,42,0.2);
+            padding: 14px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            color: #2c1a0e;
+            border-radius: 4px;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+          }
+          .form-input:focus { border-color: #c0522a; box-shadow: 0 0 0 4px rgba(192,82,42,0.05); }
+          .btn-gold {
+            background: linear-gradient(135deg, #8b3c1e, #c0522a, #d96a38);
+            border: none;
+            color: #f5edd6;
+            padding: 14px 28px;
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            font-weight: 900;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.4s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          }
+          .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(192,82,42,0.2); }
+          
+          .admin-page { min-height: 100vh; background: #f5edd6; padding-bottom: 120px; color: #2c1a0e; }
+          .admin-header {
+            padding: 120px 0 60px;
+            position: relative;
+          }
+          .admin-header-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 100%, rgba(192,82,42,0.07) 0%, transparent 70%);
+          }
+          .admin-header-inner {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            position: relative;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+          }
+          .admin-title { font-size: clamp(1.8rem, 3vw, 2.8rem); font-family: var(--font-display); font-weight: 900; letter-spacing: 0.05em; color: #2c1a0e; }
+          .gold-text { color: #c0522a; }
+          .admin-sub { font-family: 'Montserrat', sans-serif; color: var(--muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.2em; margin-top: 12px; }
+          .btn-outline {
+            background: transparent;
+            border: 1.5px solid #c0522a;
+            color: #c0522a;
+            padding: 10px 24px;
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 900;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.4s;
+          }
+          .btn-outline:hover { background: #c0522a; color: #f5edd6; }
+          
+          .admin-content { max-width: 1400px; margin: 0 auto; padding: 48px 40px 0; }
+          .admin-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 60px;
+            border-bottom: 1px solid rgba(192, 82, 42, 0.1);
+          }
+          .admin-tab {
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 16px 32px;
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: -1px;
+            font-weight: 700;
+          }
+          .admin-tab:hover { color: #c0522a; }
+          .admin-tab.active { color: #c0522a; border-bottom-color: #c0522a; }
+          
+          .orders-section { animation: fadeInUp 0.6s ease; }
+          .orders-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
+          .tab-title { font-family: var(--font-display); font-size: 1.4rem; color: #2c1a0e; letter-spacing: 0.05em; }
+          .order-count { color: #c0522a; font-size: 1rem; margin-left: 12px; }
+          
+          .orders-table-wrap { overflow-x: auto; border-radius: 8px; background: #ede4cc; border: 1px solid rgba(192,82,42,0.08); box-shadow: 0 4px 24px rgba(44, 26, 14, 0.04); }
+          .orders-table { width: 100%; border-collapse: collapse; }
+          .orders-table th {
+            background: #e5d9b8;
+            padding: 18px 24px;
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: #8b3c1e;
+            text-align: left;
+            border-bottom: 1px solid rgba(192,82,42,0.1);
+          }
+          .orders-table td {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(192,82,42,0.05);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            color: #2c1a0e;
+            vertical-align: middle;
+            font-weight: 500;
+          }
+          .orders-table tr:hover td { background: rgba(192,82,42,0.03); }
+          .order-id { font-family: var(--font-display); color: #c0522a; font-weight: 900; font-size: 0.9rem; }
+          .customer-name { font-weight: 700; color: #2c1a0e; margin-bottom: 4px; font-size: 0.85rem; }
+          
+          .badge {
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            display: inline-block;
+          }
+          .badge-pending { background: rgba(202,138,4,0.12); color: #92610a; }
+          .badge-shipped { background: rgba(124,58,237,0.1); color: #6d28d9; }
+          .badge-delivered { background: rgba(22,163,74,0.1); color: #15803d; }
+          .badge-cancelled { background: rgba(220,38,38,0.1); color: #991b1b; }
+          .badge-processing { background: rgba(37,99,235,0.1); color: #1e40af; }
+          
+          .upload-form { max-width: 800px; background: #faf4e8; border: 1px solid rgba(192,82,42,0.15); border-radius: 8px; padding: 50px; box-shadow: 0 10px 40px rgba(44, 26, 14, 0.06); }
+          .form-textarea {
+            width: 100%;
+            background: #faf4e8;
+            border: 1px solid rgba(192,82,42,0.2);
+            padding: 16px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            min-height: 120px;
+            border-radius: 4px;
+            color: #2c1a0e;
+            outline: none;
+            transition: all 0.3s;
+          }
+          .form-textarea:focus { border-color: #c0522a; }
+          
+          .status-select {
+            background: #e5d9b8;
+            border: 1px solid rgba(192,82,42,0.2);
+            color: #2c1a0e;
+            padding: 8px 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            border-radius: 4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            outline: none;
+          }
+          
+          @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @media (max-width: 1024px) {
+            .admin-header-inner, .admin-content { padding: 0 24px; }
+            .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
           }
         `}</style>
             </div>
@@ -180,9 +461,6 @@ export default function AdminPage() {
                                 {isAdminUser ? `Logged in as ${user.name}` : 'Manage products & orders'}
                             </p>
                         </div>
-                        <button className="btn-outline" onClick={() => { if (isAdminUser) { logout(); router.push('/'); } else { setPinAuthed(false); } }}>
-                            Sign Out
-                        </button>
                     </div>
                 </div>
 
@@ -191,7 +469,9 @@ export default function AdminPage() {
                     <div className="admin-tabs">
                         {[
                             { id: 'orders', label: 'Orders', icon: '📦' },
-                            { id: 'upload', label: 'Upload Product', icon: '✦' },
+                            { id: 'manage-products', label: 'Manage Products', icon: '📋' },
+                            { id: 'upload', label: editingProduct ? 'Edit Product' : 'Upload Product', icon: '✦' },
+                            { id: 'content', label: 'Site Content', icon: '✒️' },
                         ].map((tab) => (
                             <button
                                 key={tab.id}
@@ -226,6 +506,7 @@ export default function AdminPage() {
                                             <tr>
                                                 <th>Order #</th>
                                                 <th>Customer</th>
+                                                <th>Contact & Address</th>
                                                 <th>Items</th>
                                                 <th>Total</th>
                                                 <th>Date</th>
@@ -239,7 +520,11 @@ export default function AdminPage() {
                                                     <td className="order-id">#{order.id}</td>
                                                     <td>
                                                         <div className="customer-name">{order.customerName}</div>
-                                                        <div className="customer-email">{order.email}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div className="customer-email" style={{ marginBottom: '4px' }}>{order.email}</div>
+                                                        <div className="customer-email" style={{ marginBottom: '4px' }}>{order.phone}</div>
+                                                        <div className="customer-email" style={{ whiteSpace: 'normal', minWidth: '150px' }}>{order.address}</div>
                                                     </td>
                                                     <td>
                                                         {order.items.map((i) => (
@@ -248,7 +533,7 @@ export default function AdminPage() {
                                                             </div>
                                                         ))}
                                                     </td>
-                                                    <td className="order-total">${order.total.toFixed(2)}</td>
+                                                    <td className="order-total">{formatPrice(order.total)}</td>
                                                     <td className="order-date">
                                                         {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                                     </td>
@@ -277,10 +562,73 @@ export default function AdminPage() {
                         </div>
                     )}
 
-                    {/* Upload Product Tab */}
+                    {/* Manage Products Tab */}
+                    {activeTab === 'manage-products' && (
+                        <div className="orders-section">
+                            <div className="orders-toolbar">
+                                <h2 className="tab-title">Manage Products <span className="order-count">({products.length})</span></h2>
+                                <button className="btn-outline" style={{ padding: '10px 20px', fontSize: '0.65rem' }} onClick={() => setActiveTab('upload')}>
+                                    + Add New Product
+                                </button>
+                            </div>
+                            {loadingProducts ? (
+                                <div style={{ textAlign: 'center', padding: '60px', color: 'var(--gold)' }}>Loading products...</div>
+                            ) : products.length === 0 ? (
+                                <div className="empty-state">
+                                    <p>No products found in the catalog.</p>
+                                </div>
+                            ) : (
+                                <div className="orders-table-wrap">
+                                    <table className="orders-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Image</th>
+                                                <th>Name & Category</th>
+                                                <th>Price</th>
+                                                <th>Stock</th>
+                                                <th>Featured</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {products.map((p) => (
+                                                <tr key={p.id}>
+                                                    <td>
+                                                        <img src={p.image} alt={p.name} style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} onError={(e) => { e.target.src = 'https://placehold.co/40x40/1E1E1E/C9A84C?text=' + p.name[0]; }} />
+                                                    </td>
+                                                    <td>
+                                                        <div className="customer-name">{p.name}</div>
+                                                        <div className="customer-email">{p.category} | {p.unit}</div>
+                                                    </td>
+                                                    <td className="order-total">{formatPrice(p.price)}</td>
+                                                    <td>{p.stock}</td>
+                                                    <td>
+                                                        <span className={`badge ${p.featured ? 'badge-processing' : 'badge-gold'}`}>
+                                                            {p.featured ? 'Yes' : 'No'}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button 
+                                                            className="btn-outline" 
+                                                            style={{ padding: '6px 12px', fontSize: '0.6rem' }}
+                                                            onClick={() => handleEditClick(p)}
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Upload / Edit Product Tab */}
                     {activeTab === 'upload' && (
                         <div className="upload-section">
-                            <h2 className="tab-title">Upload New Product</h2>
+                            <h2 className="tab-title">{editingProduct ? `Editing: ${editingProduct.name}` : 'Upload New Product'}</h2>
                             {productSuccess && (
                                 <div className="success-banner">✦ {productSuccess}</div>
                             )}
@@ -330,10 +678,174 @@ export default function AdminPage() {
                                         <span>Mark as Featured Product</span>
                                     </label>
                                 </div>
-                                <button type="submit" className="btn-gold" style={{ minWidth: '200px' }} disabled={saving}>
-                                    {saving ? 'Uploading...' : '✦ Upload Product'}
-                                </button>
+                                <div style={{ display: 'flex', gap: '16px' }}>
+                                    <button type="submit" className="btn-gold" style={{ minWidth: '200px' }} disabled={saving}>
+                                        {saving ? 'Saving...' : (editingProduct ? '✦ Save Changes' : '✦ Upload Product')}
+                                    </button>
+                                    {editingProduct && (
+                                        <button type="button" className="btn-outline" onClick={cancelEdit}>
+                                            Cancel
+                                        </button>
+                                    )}
+                                </div>
                             </form>
+                        </div>
+                    )}
+
+                    {/* Site Content CMS Tab */}
+                    {activeTab === 'content' && (
+                        <div className="upload-section">
+                            <h2 className="tab-title">Manage Site Content</h2>
+                            {contentMsg && (
+                                <div className={contentMsg.includes('Failed') ? 'error-banner' : 'success-banner'}>
+                                    {contentMsg.includes('Failed') ? '⚠' : '✦'} {contentMsg}
+                                </div>
+                            )}
+                            
+                            {loadingContent ? (
+                                <div style={{ textAlign: 'center', padding: '60px', color: 'var(--gold)' }}>Loading content...</div>
+                            ) : (
+                                <form className="upload-form" onSubmit={handleContentSubmit}>
+                                    {/* Hero Section */}
+                                    <div style={{ marginBottom: '48px', paddingBottom: '32px', borderBottom: '1px solid rgba(192,82,42,0.1)' }}>
+                                        <h3 style={{ fontFamily: 'var(--font-cinzel)', fontSize: '1.2rem', color: 'var(--gold)', marginBottom: '24px' }}>1. Hero Section (Home Top)</h3>
+                                        <div className="form-grid-2">
+                                            <div className="form-group">
+                                                <label className="form-label">EST. Year Label</label>
+                                                <input className="form-input" name="hero_est" value={siteContent.hero_est || ''} onChange={handleContentChange} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="form-label">Nature's Specimens Label</label>
+                                                <input className="form-input" name="hero_label" value={siteContent.hero_label || ''} onChange={handleContentChange} />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Hero Main Title <span style={{ textTransform: 'none', color: 'var(--muted)', fontWeight: 'normal' }}>(HTML Allowed)</span></label>
+                                            <input className="form-input" name="hero_title" value={siteContent.hero_title || ''} onChange={handleContentChange} required />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Hero Description</label>
+                                            <textarea className="form-textarea" name="hero_desc" value={siteContent.hero_desc || ''} onChange={handleContentChange} required style={{ minHeight: '80px' }} />
+                                        </div>
+                                        <div className="form-grid-3">
+                                            <div className="form-group">
+                                                <label className="form-label">Button 1 (Explore)</label>
+                                                <input className="form-input" name="hero_btn1_text" value={siteContent.hero_btn1_text || ''} onChange={handleContentChange} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="form-label">Button 2 (Story)</label>
+                                                <input className="form-input" name="hero_btn2_text" value={siteContent.hero_btn2_text || ''} onChange={handleContentChange} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="form-label">Scroll Hint Label</label>
+                                                <input className="form-input" name="hero_scroll_hint" value={siteContent.hero_scroll_hint || ''} onChange={handleContentChange} />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Collection Section */}
+                                    <div style={{ marginBottom: '48px', paddingBottom: '32px', borderBottom: '1px solid rgba(192,82,42,0.1)' }}>
+                                        <h3 style={{ fontFamily: 'var(--font-cinzel)', fontSize: '1.2rem', color: 'var(--gold)', marginBottom: '24px' }}>2. Featured Collection Section</h3>
+                                        <div className="form-group">
+                                            <label className="form-label">Section Tag Label</label>
+                                            <input className="form-input" name="collection_pre" value={siteContent.collection_pre || ''} onChange={handleContentChange} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Collection Title</label>
+                                            <input className="form-input" name="collection_title" value={siteContent.collection_title || ''} onChange={handleContentChange} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Collection Description</label>
+                                            <textarea className="form-textarea" name="collection_desc" value={siteContent.collection_desc || ''} onChange={handleContentChange} style={{ minHeight: '80px' }} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Collection Counter Text</label>
+                                            <input className="form-input" name="collection_counter" value={siteContent.collection_counter || ''} onChange={handleContentChange} />
+                                        </div>
+                                    </div>
+
+                                    {/* Heritage Section */}
+                                    <div style={{ marginBottom: '48px' }}>
+                                        <h3 style={{ fontFamily: 'var(--font-cinzel)', fontSize: '1.2rem', color: 'var(--gold)', marginBottom: '24px' }}>3. Heritage Section (Bottom)</h3>
+                                        <div className="form-grid-2">
+                                            <div className="form-group">
+                                                <label className="form-label">Philosophy Tag</label>
+                                                <input className="form-input" name="heritage_tag" value={siteContent.heritage_tag || ''} onChange={handleContentChange} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="form-label">Frame Overlay Text</label>
+                                                <input className="form-input" name="heritage_frame_text" value={siteContent.heritage_frame_text || ''} onChange={handleContentChange} />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Heritage Title <span style={{ textTransform: 'none', color: 'var(--muted)', fontWeight: 'normal' }}>(HTML Allowed)</span></label>
+                                            <input className="form-input" name="heritage_title" value={siteContent.heritage_title || ''} onChange={handleContentChange} required />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Heritage Description</label>
+                                            <textarea className="form-textarea" name="heritage_desc" value={siteContent.heritage_desc || ''} onChange={handleContentChange} required style={{ minHeight: '120px' }} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Background Image URL</label>
+                                            <input className="form-input" name="heritage_bg" value={siteContent.heritage_bg || ''} onChange={handleContentChange} required placeholder="https://..." />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Button Text</label>
+                                            <input className="form-input" name="heritage_btn_text" value={siteContent.heritage_btn_text || ''} onChange={handleContentChange} />
+                                        </div>
+                                        {siteContent.heritage_bg && (
+                                            <div style={{ marginTop: '16px', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(192,82,42,0.2)', height: '140px', background: 'var(--dark)' }}>
+                                                <img src={siteContent.heritage_bg} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} alt="Heritage Background Preview" />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Footer Section */}
+                                    <div style={{ marginBottom: '48px' }}>
+                                        <h3 style={{ fontFamily: 'var(--font-cinzel)', fontSize: '1.2rem', color: 'var(--gold)', marginBottom: '24px' }}>4. Global Footer Content</h3>
+                                        <div className="form-group">
+                                            <label className="form-label">Footer CTA Heading</label>
+                                            <input className="form-input" name="footer_cta_text" value={siteContent.footer_cta_text || ''} onChange={handleContentChange} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Footer CTA Button Text</label>
+                                            <input className="form-input" name="footer_cta_btn" value={siteContent.footer_cta_btn || ''} onChange={handleContentChange} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Footer Short Description</label>
+                                            <textarea className="form-textarea" name="footer_desc" value={siteContent.footer_desc || ''} onChange={handleContentChange} style={{ minHeight: '80px' }} />
+                                        </div>
+                                        <div className="form-grid-2">
+                                            <div className="form-group">
+                                                <label className="form-label">Contact Email</label>
+                                                <input className="form-input" name="footer_email" value={siteContent.footer_email || ''} onChange={handleContentChange} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="form-label">Physical Address</label>
+                                                <input className="form-input" name="footer_address" value={siteContent.footer_address || ''} onChange={handleContentChange} />
+                                            </div>
+                                        </div>
+                                        <div className="form-grid-2">
+                                            <div className="form-group">
+                                                <label className="form-label">Instagram URL</label>
+                                                <input className="form-input" name="footer_ig" value={siteContent.footer_ig || ''} onChange={handleContentChange} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="form-label">Twitter URL</label>
+                                                <input className="form-input" name="footer_tw" value={siteContent.footer_tw || ''} onChange={handleContentChange} />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Copyright Tagline</label>
+                                            <input className="form-input" name="footer_tagline" value={siteContent.footer_tagline || ''} onChange={handleContentChange} />
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" className="btn-gold" style={{ width: '100%', justifyContent: 'center' }} disabled={savingContent}>
+                                        {savingContent ? 'Publishing Changes...' : '✦ Save All Site Content'}
+                                    </button>
+                                </form>
+                            )}
                         </div>
                     )}
                 </div>

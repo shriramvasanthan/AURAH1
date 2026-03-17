@@ -27,12 +27,17 @@ if (isConfigValid) {
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 }
 
-// Build-safe mock for Firebase Auth
-const mockAuth = new Proxy({
-    onAuthStateChanged: () => () => { },
+const mockAuth = {
+    onAuthStateChanged: (callback) => {
+        // Trigger once with null so the app knows we are unauthenticated
+        setTimeout(() => callback(null), 0);
+        return () => { };
+    },
     currentUser: null,
     signOut: () => Promise.resolve(),
-}, {
+};
+
+export const auth = isConfigValid ? getAuth(app) : new Proxy(mockAuth, {
     get: (target, prop) => {
         if (prop in target) return target[prop];
         // For any other access (like internal Firebase SDK methods), return a no-op
@@ -44,8 +49,6 @@ const mockAuth = new Proxy({
         };
     }
 });
-
-export const auth = isConfigValid ? getAuth(app) : mockAuth;
 
 const dummyColl = () => ({
     doc: () => ({

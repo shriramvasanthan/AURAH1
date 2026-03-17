@@ -1,167 +1,215 @@
 'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Footer() {
-  const spices = ['Cardamom', 'Black Pepper', 'Fenugreek', 'Cinnamon', 'Turmeric', 'Cloves'];
-  const nuts = ['Cashews', 'Almonds'];
+  const [content, setContent] = useState({
+    footer_cta_text: 'Ready to Elevate Your Kitchen?',
+    footer_cta_btn: 'Shop Now',
+    footer_desc: 'Hand-selected specimens of nature’s most intense character.',
+    footer_email: 'curator@aurah.com',
+    footer_address: 'Malabar Coast, India',
+    footer_ig: '#',
+    footer_tw: '#',
+    footer_tagline: 'Explore. Preserve. Elevate.'
+  });
+
+  useEffect(() => {
+    fetch('/api/content')
+      .then(r => r.json())
+      .then(data => {
+        if (Object.keys(data).length > 0) {
+          setContent(prev => ({ ...prev, ...data }));
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   return (
-    <footer className="footer">
-      <div className="footer-inner">
-        <div className="footer-top">
-          <div className="footer-brand">
-            <div className="footer-logo">AURAH</div>
-            <p className="footer-tagline">Where Ancient Spice Meets Modern Excellence</p>
-            <div className="footer-social">
-              {['instagram', 'facebook', 'twitter'].map((s) => (
-                <a key={s} href="#" className="social-link" aria-label={s}>
-                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                  </svg>
-                </a>
-              ))}
-            </div>
-          </div>
+    <footer className="footer-container">
+      <div className="footer-cta-bar">
+        <h3 className="cta-heading">{content.footer_cta_text}</h3>
+        <Link href="/products" className="btn-gold">{content.footer_cta_btn}</Link>
+      </div>
 
-          <div className="footer-links-group">
-            <h4>Spices</h4>
-            <ul>
-              {spices.map(s => <li key={s}><Link href="/products">{s}</Link></li>)}
-            </ul>
-          </div>
-
-          <div className="footer-links-group">
-            <h4>Nuts</h4>
-            <ul>
-              {nuts.map(n => <li key={n}><Link href="/products">{n}</Link></li>)}
-            </ul>
-          </div>
-
-          <div className="footer-links-group">
-            <h4>Company</h4>
-            <ul>
-              <li><Link href="/">Home</Link></li>
-              <li><Link href="/products">All Products</Link></li>
-              <li><Link href="/cart">Cart & Checkout</Link></li>
-              <li><Link href="/admin">Admin Panel</Link></li>
-            </ul>
-          </div>
-
-          <div className="footer-contact">
-            <h4>Contact</h4>
-            <p>📧 orders@aurah.com</p>
-            <p>📞 +1 (555) 234-5678</p>
-            <p>📍 Spice Market, Old City</p>
-            <br />
-            <p style={{ fontSize: '0.75rem', opacity: 0.6 }}>Mon–Sat: 9am – 6pm</p>
+      <div className="footer-main-grid">
+        <div className="footer-col brand-info">
+          <h2 className="footer-logo">AURAH</h2>
+          <p className="footer-desc">{content.footer_desc}</p>
+          <div className="social-links">
+            <a href={content.footer_ig} target="_blank" rel="noopener noreferrer">IG</a>
+            <a href={content.footer_tw} target="_blank" rel="noopener noreferrer">TW</a>
           </div>
         </div>
 
-        <div className="footer-divider" />
+        <div className="footer-col">
+          <span className="footer-label">The Collection</span>
+          <ul className="footer-list">
+            <li><Link href="/products">All Products</Link></li>
+            <li><Link href="/story">Our Story</Link></li>
+          </ul>
+        </div>
 
-        <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} AURAH Spices & Nuts. All rights reserved.</p>
-          <p>Crafted with ✦ for spice lovers everywhere</p>
+        <div className="footer-col">
+          <span className="footer-label">Company</span>
+          <ul className="footer-list">
+            <li><Link href="/story">Heritage</Link></li>
+            <li><Link href="/contact">Contact</Link></li>
+          </ul>
+        </div>
+
+        <div className="footer-col">
+          <span className="footer-label">Reach Out</span>
+          <div className="contact-info">
+            <p>{content.footer_email}</p>
+            <p>{content.footer_address}</p>
+          </div>
         </div>
       </div>
 
-      <style>{`
-        .footer {
+      <div className="footer-bottom">
+        <p>© {new Date().getFullYear()} AURAH. {content.footer_tagline}</p>
+      </div>
+
+      <style jsx>{`
+        .footer-container {
           background: var(--dark-2);
-          border-top: 1px solid rgba(192, 82, 42, 0.2);
-          margin-top: 80px;
+          color: var(--white);
+          padding: 100px 0 40px;
+          border-top: 1px solid rgba(192, 82, 42, 0.08);
         }
-        .footer-inner {
-          max-width: 1280px;
+        .footer-cta-bar {
+          text-align: center;
+          margin-bottom: 120px;
+          padding: 0 20px;
+        }
+        .cta-heading {
+          font-family: var(--font-cinzel);
+          font-size: clamp(2rem, 5vw, 4rem);
+          margin-bottom: 40px;
+          color: var(--white);
+          letter-spacing: 0.05em;
+        }
+        .btn-gold {
+          background: linear-gradient(135deg, #8b3c1e, #c0522a, #d96a38);
+          border: none;
+          color: #f5edd6;
+          padding: 16px 40px;
+          font-family: var(--font-cinzel);
+          font-size: 0.75rem;
+          letter-spacing: 0.3em;
+          text-transform: uppercase;
+          font-weight: 900;
+          border-radius: 4px;
+          text-decoration: none;
+          display: inline-block;
+          transition: var(--transition);
+        }
+        .btn-gold:hover {
+          transform: translateY(-4px);
+          box-shadow: var(--glow-strong);
+        }
+        .footer-main-grid {
+          max-width: var(--container-max);
           margin: 0 auto;
-          padding: 80px 40px 40px;
-        }
-        .footer-top {
+          padding: 0 40px;
           display: grid;
-          grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+          grid-template-columns: 2fr 1fr 1fr 1.5fr;
           gap: 60px;
-          margin-bottom: 60px;
+          margin-bottom: 80px;
         }
         .footer-logo {
-          font-family: var(--font-display);
-          font-size: 2rem;
-          font-weight: 900;
-          letter-spacing: 0.3em;
-          background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-shimmer));
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          margin-bottom: 12px;
-        }
-        .footer-tagline {
-          font-size: 0.8rem;
-          color: var(--muted);
-          font-style: italic;
-          margin-bottom: 24px;
-          line-height: 1.6;
-        }
-        .footer-social { display: flex; gap: 12px; }
-        .social-link {
-          width: 36px;
-          height: 36px;
-          border: 1px solid rgba(192, 82, 42, 0.3);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--gold);
-          text-decoration: none;
-          transition: all 0.3s;
-        }
-        .social-link:hover {
-          background: var(--gold);
-          color: #FAF4E8;
-          box-shadow: var(--glow);
-        }
-        .footer-links-group h4,
-        .footer-contact h4 {
-          font-family: var(--font-display);
-          font-size: 0.7rem;
-          letter-spacing: 0.25em;
-          text-transform: uppercase;
-          color: var(--gold-dark);
+          font-family: var(--font-cinzel);
+          font-size: 2.5rem;
+          letter-spacing: 0.2em;
           margin-bottom: 20px;
         }
-        .footer-links-group ul { list-style: none; }
-        .footer-links-group li { margin-bottom: 10px; }
-        .footer-links-group a {
+        .footer-desc {
+          font-family: var(--font-montserrat);
+          font-size: 0.9rem;
+          line-height: 1.6;
           color: var(--muted);
-          text-decoration: none;
-          font-size: 0.85rem;
-          transition: color 0.3s, padding-left 0.3s;
+          max-width: 300px;
+          margin-bottom: 30px;
+          font-style: italic;
+        }
+        .footer-label {
           display: block;
+          font-family: var(--font-cinzel);
+          font-size: 0.65rem;
+          text-transform: uppercase;
+          letter-spacing: 0.3em;
+          color: var(--gold);
+          margin-bottom: 30px;
+          font-weight: 800;
         }
-        .footer-links-group a:hover { color: var(--gold); padding-left: 6px; }
-        .footer-contact p {
+        .footer-list {
+          list-style: none;
+          padding: 0;
+        }
+        .footer-list li {
+          margin-bottom: 15px;
+        }
+        .footer-list a {
+          text-decoration: none;
+          color: var(--white);
+          font-family: var(--font-cinzel);
+          font-size: 0.7rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.2em;
+          transition: var(--transition);
+          opacity: 0.6;
+        }
+        .footer-list a:hover {
+          opacity: 1;
+          color: var(--gold);
+        }
+        .contact-info p {
+          font-family: var(--font-montserrat);
           font-size: 0.85rem;
+          margin-bottom: 10px;
           color: var(--muted);
-          margin-bottom: 8px;
-        }
-        .footer-divider {
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(192, 82, 42, 0.3), transparent);
-          margin-bottom: 32px;
+          font-weight: 600;
         }
         .footer-bottom {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 0.78rem;
+          border-top: 1px solid rgba(192, 82, 42, 0.08);
+          padding-top: 40px;
+          text-align: center;
+          font-family: var(--font-montserrat);
+          font-size: 0.65rem;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
           color: var(--muted);
+          font-weight: 700;
+        }
+        .social-links {
+          display: flex;
+          gap: 20px;
+        }
+        .social-links a {
+          text-decoration: none;
+          color: var(--white);
+          font-family: var(--font-cinzel);
+          font-size: 0.7rem;
+          font-weight: 900;
+          opacity: 0.5;
+          transition: var(--transition);
+        }
+        .social-links a:hover {
+          opacity: 1;
+          color: var(--gold);
         }
         @media (max-width: 1024px) {
-          .footer-top { grid-template-columns: 1fr 1fr 1fr; gap: 40px; }
-          .footer-brand { grid-column: 1 / -1; }
+          .footer-main-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+          }
         }
-        @media (max-width: 600px) {
-          .footer-top { grid-template-columns: 1fr 1fr; }
-          .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
-          .footer-inner { padding: 60px 20px 30px; }
+        @media (max-width: 640px) {
+          .footer-main-grid {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
     </footer>

@@ -6,7 +6,6 @@ import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
 export default function LoginPage() {
-  const [tab, setTab] = useState('customer'); // 'customer' | 'admin'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -60,28 +59,8 @@ export default function LoginPage() {
           <p className="login-tagline">SPICES & NUTS</p>
           <div className="gold-divider" />
 
-          {/* Role Tabs */}
-          <div className="role-tabs">
-            <button
-              className={`role-tab ${tab === 'customer' ? 'active' : ''}`}
-              onClick={() => { setTab('customer'); setError(''); setEmail(''); setPassword(''); }}
-            >
-              <span className="role-icon">🛒</span>
-              Customer
-            </button>
-            <button
-              className={`role-tab ${tab === 'admin' ? 'active' : ''}`}
-              onClick={() => { setTab('admin'); setError(''); setEmail(''); setPassword(''); }}
-            >
-              <span className="role-icon">⚙️</span>
-              Admin
-            </button>
-          </div>
-
           <p className="login-hint">
-            {tab === 'customer'
-              ? 'Sign in to view your orders and track deliveries'
-              : 'Admin access — manage products and orders'}
+            Sign in to view your orders and track deliveries
           </p>
 
           <form onSubmit={handleSubmit}>
@@ -92,7 +71,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={tab === 'admin' ? 'admin@aurah.com' : 'you@example.com'}
+                placeholder="you@example.com"
                 required
               />
             </div>
@@ -116,12 +95,10 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {tab === 'customer' && (
-            <p className="register-link">
-              New here?{' '}
-              <Link href="/register" className="register-anchor">Create a free account</Link>
-            </p>
-          )}
+          <p className="register-link">
+            New here?{' '}
+            <Link href="/register" className="register-anchor">Create a free account</Link>
+          </p>
 
           <div className="back-link-wrap">
             <Link href="/" className="back-link">← Back to Store</Link>

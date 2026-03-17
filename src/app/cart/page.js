@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { formatPrice } from '@/lib/utils';
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQty, clearCart, total, itemCount } = useCart();
@@ -64,7 +65,7 @@ export default function CartPage() {
             Your order <strong>#{success.id}</strong> has been received and is being processed.<br />
             Confirmation will be sent to <strong>{success.email}</strong>.
           </p>
-          <div className="success-total">Total Paid: <span className="gold-text-static">${success.total.toFixed(2)}</span></div>
+          <div className="success-total">Total Paid: <span className="gold-text-static">{formatPrice(success.total)}</span></div>
           <Link href="/products" className="btn-gold" style={{ marginTop: '32px', display: 'inline-flex' }}>
             Continue Shopping
           </Link>
@@ -165,14 +166,14 @@ export default function CartPage() {
                         <div className="cart-item-unit">{item.unit}</div>
                       </div>
                     </div>
-                    <div className="cart-item-price">${item.price.toFixed(2)}</div>
+                    <div className="cart-item-price">{formatPrice(item.price)}</div>
                     <div className="qty-controls-small">
                       <button onClick={() => updateQty(item.id, item.quantity - 1)}>−</button>
                       <span>{item.quantity}</span>
                       <button onClick={() => updateQty(item.id, item.quantity + 1)}>+</button>
                     </div>
                     <div className="cart-item-total gold-text-static">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      {formatPrice(item.price * item.quantity)}
                     </div>
                     <button className="remove-btn" onClick={() => removeFromCart(item.id)}>×</button>
                   </div>
@@ -186,7 +187,7 @@ export default function CartPage() {
                   <h3 className="summary-title">Order Summary</h3>
                   <div className="summary-row">
                     <span>Items ({itemCount})</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>{formatPrice(total)}</span>
                   </div>
                   <div className="summary-row">
                     <span>Shipping</span>
@@ -195,7 +196,7 @@ export default function CartPage() {
                   <div className="summary-divider" />
                   <div className="summary-row total-row">
                     <span>Total</span>
-                    <span className="gold-text">${total.toFixed(2)}</span>
+                    <span className="gold-text">{formatPrice(total)}</span>
                   </div>
                 </div>
 
@@ -379,7 +380,7 @@ export default function CartPage() {
           justify-content: space-between;
           font-size: 0.88rem;
           padding: 8px 0;
-          color: rgba(245,240,232,0.7);
+          color: var(--muted);
         }
         .summary-divider { height: 1px; background: rgba(192,82,42,0.15); margin: 12px 0; }
         .total-row { font-size: 1.05rem; font-weight: 600; color: var(--white); }

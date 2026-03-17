@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+import { formatPrice } from '@/lib/utils';
 
 export default function DashboardPage() {
     const { user, loading, logout, refreshUser } = useAuth();
@@ -134,7 +135,7 @@ export default function DashboardPage() {
                             <div className="dash-stat-div" />
                             <div className="dash-stat">
                                 <div className="dash-stat-num">
-                                    ${orders.reduce((sum, o) => sum + o.total, 0).toFixed(2)}
+                                    {formatPrice(orders.reduce((sum, o) => sum + o.total, 0))}
                                 </div>
                                 <div className="dash-stat-label">Total Spent</div>
                             </div>
@@ -192,7 +193,7 @@ export default function DashboardPage() {
                                                     >
                                                         {order.status}
                                                     </div>
-                                                    <div className="order-total">${order.total.toFixed(2)}</div>
+                                                    <div className="order-total">{formatPrice(order.total)}</div>
                                                 </div>
                                             </div>
                                             <div className="order-items">
@@ -206,9 +207,9 @@ export default function DashboardPage() {
                                                         />
                                                         <div className="order-item-info">
                                                             <div className="order-item-name">{item.product.name}</div>
-                                                            <div className="order-item-meta">x{item.quantity} · ${item.price.toFixed(2)} each</div>
+                                                            <div className="order-item-meta">x{item.quantity} · {formatPrice(item.price)} each</div>
                                                         </div>
-                                                        <div className="order-item-subtotal">${(item.price * item.quantity).toFixed(2)}</div>
+                                                        <div className="order-item-subtotal">{formatPrice(item.price * item.quantity)}</div>
                                                     </div>
                                                 ))}
                                             </div>

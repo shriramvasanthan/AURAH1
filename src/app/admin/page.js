@@ -70,23 +70,32 @@ export default function AdminPage() {
         setLoadingOrders(true);
         try {
             const r = await fetch('/api/orders');
-            setOrders(await r.json());
-        } catch { } finally { setLoadingOrders(false); }
+            const data = await r.json();
+            setOrders(Array.isArray(data) ? data : []);
+        } catch { 
+            setOrders([]);
+        } finally { setLoadingOrders(false); }
     };
 
     const loadProducts = async () => {
         setLoadingProducts(true);
         try {
             const r = await fetch('/api/products');
-            setProducts(await r.json());
-        } catch { } finally { setLoadingProducts(false); }
+            const data = await r.json();
+            setProducts(Array.isArray(data) ? data : []);
+        } catch {
+            setProducts([]);
+        } finally { setLoadingProducts(false); }
     };
 
     const loadContent = async () => {
         setLoadingContent(true);
         try {
             const r = await fetch('/api/content');
-            setSiteContent(await r.json());
+            const data = await r.json();
+            if (data && !data.error) {
+                setSiteContent(data);
+            }
         } catch { } finally { setLoadingContent(false); }
     };
 

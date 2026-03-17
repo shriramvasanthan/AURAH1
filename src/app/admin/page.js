@@ -56,8 +56,13 @@ export default function AdminPage() {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        if (pin === ADMIN_PIN) { setPinAuthed(true); }
-        else { setPinError('Incorrect PIN.'); }
+        const effectivePin = ADMIN_PIN;
+        if (pin === effectivePin) { 
+            setPinAuthed(true); 
+            setPinError('');
+        } else { 
+            setPinError(`Access Denied. If you recently changed the PIN in .env, ensure you also added it to Vercel Project Settings.`); 
+        }
     };
 
     useEffect(() => {

@@ -26,8 +26,8 @@ const SoftRevealText = ({ children, className }) => {
 };
 
 export default function HomePage() {
-    // Pre-populate with 6 skeleton products to stabilize grid height
-    const [products, setProducts] = useState(Array(6).fill({ id: 'loading', loading: true }));
+    // Pre-populate with 9 skeleton products to match the fetch count and stabilize grid
+    const [products, setProducts] = useState(Array(9).fill({ id: 'loading', loading: true }));
     const [content, setContent] = useState({
         hero_est: 'EST. 1998',
         hero_label: 'NATURE\'S SPECIMENS',

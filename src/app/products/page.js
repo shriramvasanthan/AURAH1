@@ -186,13 +186,19 @@ function ProductsContent() {
           color: var(--muted);
           text-transform: uppercase;
         }
-        .skeleton-card {
-          height: 400px;
-          border-radius: 4px;
-          background: linear-gradient(90deg, var(--dark-2) 25%, var(--dark-3) 50%, var(--dark-2) 75%);
-          background-size: 200% 100%;
-          animation: shimmer 1.5s linear infinite;
-        }
+                .products-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                    gap: 32px;
+                    min-height: 800px; /* Prevent total collapse */
+                }
+                .skeleton-card {
+                    width: 100%;
+                    aspect-ratio: 1/1.4;
+                    border-radius: 4px;
+                    background: rgba(192, 82, 42, 0.04);
+                    border: 1px solid rgba(192, 82, 42, 0.08);
+                }
         .empty-state {
           text-align: center;
           padding: 100px 40px;

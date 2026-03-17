@@ -203,7 +203,7 @@ export default function HomePage() {
 
             <style jsx>{`
                 .flagship-root {
-                    background: var(--black);
+                    background: linear-gradient(135deg, #fdfaf3 0%, #f9f5e8 50%, #f4efdc 100%);
                     color: var(--white);
                     min-height: 100vh;
                 }
@@ -214,7 +214,7 @@ export default function HomePage() {
                     justify-content: center;
                     position: relative;
                     text-align: center;
-                    background: radial-gradient(circle at center, rgba(192, 82, 42, 0.08) 0%, transparent 70%);
+                    background: radial-gradient(circle at 60% 40%, rgba(192, 82, 42, 0.05) 0%, transparent 60%);
                 }
                 .hero-overlay-content {
                     z-index: 10;

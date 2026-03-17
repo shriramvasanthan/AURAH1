@@ -113,16 +113,6 @@ export default function Navbar() {
           left: 50%;
           transform: translateX(-50%);
         }
-        .nav-link-arch {
-          text-decoration: none;
-          font-family: var(--font-cinzel);
-          font-size: 0.65rem;
-          text-transform: uppercase;
-          letter-spacing: 0.25em;
-          color: var(--white);
-          font-weight: 700;
-          transition: var(--transition);
-        }
         .nav-link-arch:hover {
           color: var(--gold);
         }

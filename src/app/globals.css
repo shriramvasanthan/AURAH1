@@ -4,13 +4,13 @@
   --gold-light: #d96a38;
   --gold-dark: #8b3c1e;
   --gold-shimmer: #e8a030;
-  --black: #f5edd6;         /* Background (Light Cream) */
-  --dark: #ede4cc;          /* Secondary Background */
-  --dark-2: #e5d9b8;
-  --dark-3: #dbcea6;
-  --dark-4: #d2c394;
-  --white: #2c1a0e;         /* Text Color (Dark Brown) */
-  --muted: #8b7360;         /* Subtext Color */
+  --black: #fdfaf3;         /* Background (Lighter Cream) */
+  --dark: #f9f5e8;          /* Secondary Background */
+  --dark-2: #f4efdc;
+  --dark-3: #eee8d0;
+  --dark-4: #e8e1c4;
+  --white: #1a1a1a;         /* Text Color (Pure Blackish) */
+  --muted: #666666;         /* Subtext Color */
   --accent: #c0522a;
   --bg-warm: #f5edd6;
   --primary: #c0522a;       /* Added missing primary */
@@ -35,11 +35,16 @@ html { overflow-x: hidden; scroll-behavior: auto !important; }
 body {
   font-family: var(--font-body);
   background-color: var(--bg-warm);
-  color: var(--white); /* Updated from --black for better contrast */
+  color: var(--white);
   overflow-x: hidden;
   line-height: 1.8;
   cursor: none;
   min-height: 100vh;
+}
+
+a {
+  text-decoration: none !important;
+  color: inherit;
 }
 
 

@@ -76,6 +76,14 @@ export default function HomePage() {
             {/* Cinematic Hero - Exact Heritage Match */}
             <section className="hero-primary">
                 <div className="hero-visual">
+                    <Image 
+                        src="https://images.unsplash.com/photo-1596040033229-a9821ebd05ca?auto=format&fit=crop&q=60&w=2000"
+                        alt="Hero Background"
+                        fill
+                        priority
+                        className="hero-bg-img"
+                        style={{ objectFit: 'cover', opacity: 0.15 }}
+                    />
                     <ParticleHero />
                     <div className="glow-radial" />
                 </div>

@@ -6,7 +6,7 @@ const nextConfig = {
     serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
   },
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', 'images.unsplash.com', 'placehold.co'],
   },
   webpack(config) {
     config.resolve.alias['@'] = path.join(__dirname, 'src');

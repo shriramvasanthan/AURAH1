@@ -60,7 +60,8 @@ export function AuthProvider({ children }) {
                             role: 'customer',
                         });
                     }
-                } catch {
+                } catch (err) {
+                    console.error('Auth sync error:', err);
                     setUser({
                         id: firebaseUser.uid,
                         uid: firebaseUser.uid,
@@ -75,7 +76,15 @@ export function AuthProvider({ children }) {
             setLoading(false);
         });
 
-        return () => unsubscribe();
+        // Safety timeout: If auth state doesn't resolve in 10s, clear loading anyway
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 10000);
+
+        return () => {
+            unsubscribe();
+            clearTimeout(timer);
+        };
     }, []);
 
     // Sign in with Firebase Auth, then load Firestore profile

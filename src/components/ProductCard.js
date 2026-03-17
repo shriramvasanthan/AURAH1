@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useState } from 'react';
 import { formatPrice } from '@/lib/utils';
@@ -18,10 +19,13 @@ export default function ProductCard({ product }) {
     <div className="product-card-archival">
       <div className="image-wrapper">
         <Link href={`/products/${product.id}`}>
-          <img 
+          <Image 
             src={product.image || 'https://placehold.co/600x600/F5EDD6/2C1A0E?text=' + product.name} 
             alt={product.name} 
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="product-img"
+            style={{ objectFit: 'cover' }}
           />
         </Link>
         {product.featured && <div className="featured-badge">Featured ✦</div>}

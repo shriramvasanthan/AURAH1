@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import ParticleHero from '@/components/ParticleHero';
 import ProductCard from '@/components/ProductCard';
 
@@ -25,7 +26,8 @@ const SoftRevealText = ({ children, className }) => {
 };
 
 export default function HomePage() {
-    const [products, setProducts] = useState([]);
+    // Pre-populate with 6 skeleton products to stabilize grid height
+    const [products, setProducts] = useState(Array(6).fill({ id: 'loading', loading: true }));
     const [content, setContent] = useState({
         hero_est: 'EST. 1998',
         hero_label: 'NATURE\'S SPECIMENS',
@@ -133,7 +135,7 @@ export default function HomePage() {
                     <div className="flagship-grid">
                         {products.map((product, i) => (
                             <motion.div 
-                                key={product.id}
+                                key={product.id === 'loading' ? `loading-${i}` : product.id}
                                 initial={{ opacity: 0, y: 60, rotate: i % 2 === 0 ? -1 : 1 }}
                                 whileInView={{ opacity: 1, y: 0, rotate: 0 }}
                                 viewport={{ once: true, margin: "-50px" }}
@@ -144,7 +146,11 @@ export default function HomePage() {
                                 }}
                                 className={`grid-item-flagship ${i % 3 === 1 ? 'offset-mid' : i % 3 === 2 ? 'offset-deep' : ''}`}
                             >
-                                <ProductCard product={product} />
+                                {product.loading ? (
+                                    <div className="skeleton-card" />
+                                ) : (
+                                    <ProductCard product={product} />
+                                )}
                             </motion.div>
                         ))}
                     </div>
@@ -159,7 +165,17 @@ export default function HomePage() {
                         style={{ scale: scaleHeritage }}
                     >
                         <div className="heritage-image-frame">
-                            <div className="heritage-img-inner" style={{ backgroundImage: `url('${content.heritage_bg}')` }} />
+                            <Image 
+                                src={content.heritage_bg} 
+                                alt="Heritage Background" 
+                                fill
+                                sizes="(max-width: 1024px) 100vw, 50vw"
+                                style={{ 
+                                    objectFit: 'cover',
+                                    mixBlendMode: 'luminosity',
+                                    opacity: 0.6
+                                }}
+                            />
                             <div className="frame-overlay">{content.heritage_frame_text}</div>
                         </div>
                     </motion.div>
@@ -312,6 +328,13 @@ export default function HomePage() {
                     display: grid;
                     grid-template-columns: repeat(3, 1fr);
                     gap: 60px;
+                    min-height: 800px; /* Prevent collapse */
+                }
+                .skeleton-card {
+                    width: 100%;
+                    aspect-ratio: 1/1.5;
+                    background: rgba(192, 82, 42, 0.03);
+                    border-radius: 4px;
                 }
                 .offset-mid { margin-top: 100px; }
                 .offset-deep { margin-top: 200px; }

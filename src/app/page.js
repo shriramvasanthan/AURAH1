@@ -203,7 +203,7 @@ export default function HomePage() {
 
             <style jsx>{`
                 .flagship-root {
-                    background: linear-gradient(135deg, #fdfaf3 0%, #f9f5e8 50%, #f4efdc 100%);
+                    background: linear-gradient(to bottom, #fdfaf3 0%, #f4efdc 50%, #d2c394 100%);
                     color: var(--white);
                     min-height: 100vh;
                 }

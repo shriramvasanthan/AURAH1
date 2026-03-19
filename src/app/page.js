@@ -203,7 +203,7 @@ export default function HomePage() {
             <style jsx>{`
                 .flagship-root {
                     background: linear-gradient(to bottom, #fdfaf3 0%, #f4efdc 50%, #d2c394 100%);
-                    color: var(--white);
+                    color: #2C1A0E;
                     min-height: 100vh;
                 }
                 /* ===== HERO ===== */
@@ -249,7 +249,7 @@ export default function HomePage() {
                     line-height: 0.9;
                     margin-bottom: 2rem;
                     letter-spacing: -0.03em;
-                    color: var(--white);
+                    color: #2C1A0E;
                 }
                 .title-serif {
                     font-style: italic;

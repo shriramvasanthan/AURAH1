@@ -36,7 +36,8 @@ export default function ElegantMenu() {
   const menuItems = [
     { name: 'Home', href: '/', subtitle: 'Our Philosophy' },
     { name: 'Products', href: '/products', subtitle: 'Browse Specimens' },
-    { name: 'Our Story', href: '/story', subtitle: 'A 25 Year Journey' },
+    { name: 'Heritage', href: '/story', subtitle: 'A 25 Year Journey' },
+    { name: 'Contact', href: '/contact', subtitle: 'Reach Out' },
     { name: 'Cart', href: '/cart', subtitle: `${itemCount} item${itemCount !== 1 ? 's' : ''}` },
   ];
 

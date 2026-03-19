@@ -40,6 +40,10 @@ export default function AdminPage() {
     const [orders, setOrders] = useState([]);
     const [loadingOrders, setLoadingOrders] = useState(false);
 
+    // Contact Messages
+    const [contacts, setContacts] = useState([]);
+    const [loadingContacts, setLoadingContacts] = useState(false);
+
     // Site Content
     const [siteContent, setSiteContent] = useState({
         hero_est: '', hero_label: '', hero_title: '', hero_desc: '', 
@@ -69,6 +73,7 @@ export default function AdminPage() {
         if (authed && activeTab === 'orders') loadOrders();
         if (authed && activeTab === 'manage-products') loadProducts();
         if (authed && activeTab === 'content') loadContent();
+        if (authed && activeTab === 'contacts') loadContacts();
     }, [authed, activeTab]);
 
     const loadOrders = async () => {
@@ -80,6 +85,17 @@ export default function AdminPage() {
         } catch { 
             setOrders([]);
         } finally { setLoadingOrders(false); }
+    };
+
+    const loadContacts = async () => {
+        setLoadingContacts(true);
+        try {
+            const r = await fetch('/api/contact');
+            const data = await r.json();
+            setContacts(Array.isArray(data) ? data : []);
+        } catch {
+            setContacts([]);
+        } finally { setLoadingContacts(false); }
     };
 
     const loadProducts = async () => {
@@ -483,6 +499,7 @@ export default function AdminPage() {
                     <div className="admin-tabs">
                         {[
                             { id: 'orders', label: 'Orders', icon: '📦' },
+                            { id: 'contacts', label: 'Contact Messages', icon: '✉️' },
                             { id: 'manage-products', label: 'Manage Products', icon: '📋' },
                             { id: 'upload', label: editingProduct ? 'Edit Product' : 'Upload Product', icon: '✦' },
                             { id: 'content', label: 'Site Content', icon: '✒️' },
@@ -566,6 +583,55 @@ export default function AdminPage() {
                                                                 <option key={s} value={s}>{s}</option>
                                                             ))}
                                                         </select>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Contact Messages Tab */}
+                    {activeTab === 'contacts' && (
+                        <div className="orders-section">
+                            <div className="orders-toolbar">
+                                <h2 className="tab-title">Contact Messages <span className="order-count">({contacts.length})</span></h2>
+                                <button className="btn-outline" style={{ padding: '10px 20px', fontSize: '0.65rem' }} onClick={loadContacts}>
+                                    Refresh
+                                </button>
+                            </div>
+                            {loadingContacts ? (
+                                <div style={{ textAlign: 'center', padding: '60px', color: 'var(--gold)' }}>Loading messages...</div>
+                            ) : contacts.length === 0 ? (
+                                <div className="empty-state">
+                                    <div style={{ fontSize: '3rem', color: 'rgba(201,168,76,0.2)', marginBottom: '16px' }}>✉️</div>
+                                    <p>No contact messages yet. Submissions from the contact page will appear here.</p>
+                                </div>
+                            ) : (
+                                <div className="orders-table-wrap">
+                                    <table className="orders-table">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Subject</th>
+                                                <th>Message</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {contacts.map((msg) => (
+                                                <tr key={msg.id}>
+                                                    <td className="order-id">#{msg.id}</td>
+                                                    <td><div className="customer-name">{msg.name}</div></td>
+                                                    <td><div className="customer-email">{msg.email}</div></td>
+                                                    <td><span className="badge badge-pending">{msg.subject}</span></td>
+                                                    <td style={{ maxWidth: '300px', whiteSpace: 'normal', fontSize: '0.78rem' }}>{msg.message}</td>
+                                                    <td className="order-date">
+                                                        {new Date(msg.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                                     </td>
                                                 </tr>
                                             ))}

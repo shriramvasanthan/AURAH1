@@ -13,6 +13,12 @@ export default function CartPage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState('');
+  const [showPayment, setShowPayment] = useState(false);
+  const [pendingOrder, setPendingOrder] = useState(null);
+
+  // UPI config – update your UPI ID here or via env
+  const UPI_ID = process.env.NEXT_PUBLIC_UPI_ID || 'aurah@upi';
+  const MERCHANT_NAME = 'AURAH';
 
   useEffect(() => {
     if (user) {
@@ -44,14 +50,105 @@ export default function CartPage() {
       });
       if (!res.ok) throw new Error('Order failed');
       const order = await res.json();
-      setSuccess(order);
-      clearCart();
+      setPendingOrder(order);
+      setShowPayment(true);
     } catch (err) {
       setError('Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
+
+  const handlePaymentConfirm = () => {
+    setSuccess(pendingOrder);
+    clearCart();
+    setShowPayment(false);
+  };
+
+  // Generate UPI QR URL
+  const upiLink = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${(total || 0).toFixed(2)}&cu=INR&tn=${encodeURIComponent('AURAH Order Payment')}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiLink)}&color=2C1A0E&bgcolor=FAF4E8`;
+
+  if (showPayment && pendingOrder) {
+    return (
+      <div className="success-page">
+        <div className="success-card upi-card">
+          <div className="upi-header">
+            <div className="upi-icon">₹</div>
+            <h1 className="success-title">Complete Payment</h1>
+            <p className="success-sub">Order #{pendingOrder.id} · <strong>{formatPrice(pendingOrder.total)}</strong></p>
+          </div>
+
+          <div className="upi-body">
+            <p className="upi-instruction">Scan the QR code below with any UPI app<br />(PhonePe, GPay, Paytm, BHIM…)</p>
+            <div className="upi-qr-wrapper">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={qrUrl} alt="UPI QR Code" className="upi-qr" width={220} height={220} />
+            </div>
+            <div className="upi-id-box">
+              <span className="upi-id-label">UPI ID</span>
+              <span className="upi-id-value">{UPI_ID}</span>
+            </div>
+            <a href={upiLink} className="upi-app-btn" rel="noopener noreferrer">
+              ↗ Open in UPI App
+            </a>
+          </div>
+
+          <div className="upi-footer">
+            <p className="upi-note">After completing the payment, tap the button below to confirm your order.</p>
+            <button className="btn-gold upi-confirm-btn" onClick={handlePaymentConfirm}>
+              ✦ I Have Paid — Confirm Order
+            </button>
+            <button
+              className="upi-cancel-link"
+              onClick={() => { setShowPayment(false); setPendingOrder(null); }}
+            >
+              ← Go back and edit details
+            </button>
+          </div>
+        </div>
+        <style>{`
+          .upi-card { max-width: 440px; padding: 40px 32px; }
+          .upi-header { text-align: center; margin-bottom: 24px; }
+          .upi-icon { font-size: 2.5rem; color: var(--gold); margin-bottom: 8px; line-height: 1; }
+          .upi-body { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 28px; }
+          .upi-instruction { text-align: center; font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+          .upi-qr-wrapper {
+            padding: 16px; background: #FAF4E8;
+            border: 2px solid rgba(192,82,42,0.2);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(44,26,14,0.08);
+          }
+          .upi-qr { display: block; border-radius: 4px; }
+          .upi-id-box {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 12px 24px; background: rgba(192,82,42,0.06);
+            border: 1px solid rgba(192,82,42,0.15); border-radius: 8px;
+            width: 100%;
+          }
+          .upi-id-label { font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+          .upi-id-value { font-family: var(--font-cinzel); font-size: 1.05rem; color: #2C1A0E; font-weight: 700; letter-spacing: 0.05em; }
+          .upi-app-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: #2C1A0E; color: #FAF4E8;
+            padding: 12px 28px; border-radius: 6px;
+            font-family: var(--font-cinzel); font-size: 0.65rem; letter-spacing: 0.2em;
+            text-decoration: none; text-transform: uppercase; font-weight: 700;
+            transition: all 0.3s;
+          }
+          .upi-app-btn:hover { background: var(--gold); color: #2C1A0E; }
+          .upi-footer { text-align: center; border-top: 1px solid rgba(192,82,42,0.1); padding-top: 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+          .upi-note { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+          .upi-confirm-btn { width: 100%; justify-content: center; min-height: 52px; }
+          .upi-cancel-link { background: none; border: none; color: var(--muted); font-size: 0.78rem; cursor: pointer; text-decoration: underline; padding: 4px; }
+          .upi-cancel-link:hover { color: var(--gold); }
+          @media (max-width: 480px) {
+            .upi-card { padding: 28px 18px; }
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   if (success) {
     return (

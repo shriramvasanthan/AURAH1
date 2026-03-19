@@ -64,3 +64,12 @@ model SiteContent {
   value     String
   updatedAt DateTime @updatedAt
 }
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+}

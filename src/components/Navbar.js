@@ -41,7 +41,7 @@ export default function Navbar() {
   const links = [
     { href: '/', label: 'Home' },
     { href: '/products', label: 'Products' },
-    { href: '/cart', label: `Cart (${itemCount})` },
+    { href: '/contact', label: 'Contact' },
   ];
 
   return (
@@ -175,7 +175,7 @@ export default function Navbar() {
           font-size: 1.5rem;
           font-weight: 900;
           letter-spacing: 0.35em;
-          color: var(--white);
+          color: #2C1A0E;
           line-height: 1;
         }
         .logo-sub {

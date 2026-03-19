@@ -18,12 +18,12 @@ export default function ProductCard({ product }) {
   return (
     <div className="product-card-archival">
       <div className="image-wrapper">
-        <Link href={`/products/${product.id}`}>
-          <Image 
-            src={product.image || 'https://placehold.co/600x600/F5EDD6/2C1A0E?text=' + product.name} 
-            alt={product.name} 
+        <Link href={`/products/${product.id}`} tabIndex={-1}>
+          <Image
+            src={product.image || 'https://placehold.co/600x600/F5EDD6/2C1A0E?text=' + encodeURIComponent(product.name)}
+            alt={product.name}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
             className="product-img"
             style={{ objectFit: 'cover' }}
           />
@@ -33,21 +33,24 @@ export default function ProductCard({ product }) {
 
       <div className="content-area">
         <div className="meta-top">
-           <span className="category-tag">{product.category}</span>
-           <span className="unit-tag">{product.unit}</span>
+          <span className="category-tag">{product.category}</span>
+          <span className="unit-tag">{product.unit}</span>
         </div>
-        
-        <h3 className="product-name">{product.name}</h3>
-        <p className="product-desc-short">{product.description?.substring(0, 60)}...</p>
-        
+
+        <Link href={`/products/${product.id}`} className="product-name-link">
+          <h3 className="product-name">{product.name}</h3>
+        </Link>
+        <p className="product-desc-short">{product.description?.substring(0, 65)}…</p>
+
         <div className="price-action">
           <span className="product-price">{formatPrice(product.price)}</span>
-          <button 
+          <button
             className={`add-trigger-btn ${added ? 'added' : ''}`}
             onClick={handleAdd}
             disabled={added}
+            aria-label={added ? 'Added to bag' : `Add ${product.name} to bag`}
           >
-            {added ? 'Successfully Added ✓' : 'Add To Bag'}
+            {added ? '✓ Added' : 'Add To Bag'}
           </button>
         </div>
       </div>
@@ -56,16 +59,16 @@ export default function ProductCard({ product }) {
         .product-card-archival {
           background: #faf4e8;
           border: 1px solid rgba(192, 82, 42, 0.12);
-          border-radius: 4px;
+          border-radius: 6px;
           overflow: hidden;
           transition: var(--transition);
           display: flex;
           flex-direction: column;
         }
         .product-card-archival:hover {
-          transform: translateY(-8px);
+          transform: translateY(-6px);
           box-shadow: var(--glow);
-          border-color: rgba(192, 82, 42, 0.3);
+          border-color: rgba(192, 82, 42, 0.28);
         }
         .image-wrapper {
           position: relative;
@@ -77,28 +80,28 @@ export default function ProductCard({ product }) {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+          transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
         }
         .product-card-archival:hover .product-img {
-          transform: scale(1.08);
+          transform: scale(1.06);
         }
         .featured-badge {
           position: absolute;
-          top: 1.5rem;
-          left: 1.5rem;
-          background: rgba(192, 82, 42, 0.9);
+          top: 1rem;
+          left: 1rem;
+          background: rgba(192, 82, 42, 0.92);
           backdrop-filter: blur(8px);
           color: #f5edd6;
           font-family: var(--font-cinzel);
-          font-size: 0.55rem;
+          font-size: 0.5rem;
           text-transform: uppercase;
           letter-spacing: 0.2em;
-          padding: 6px 12px;
+          padding: 5px 10px;
           font-weight: 700;
           border-radius: 2px;
         }
         .content-area {
-          padding: 2rem;
+          padding: 1.25rem 1.25rem 1rem;
           flex-grow: 1;
           display: flex;
           flex-direction: column;
@@ -106,11 +109,11 @@ export default function ProductCard({ product }) {
         .meta-top {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 1rem;
+          margin-bottom: 0.6rem;
         }
         .category-tag {
           font-family: var(--font-cinzel);
-          font-size: 0.5rem;
+          font-size: 0.48rem;
           text-transform: uppercase;
           letter-spacing: 0.2em;
           color: var(--gold);
@@ -118,32 +121,38 @@ export default function ProductCard({ product }) {
         }
         .unit-tag {
           font-family: var(--font-montserrat);
-          font-size: 0.6rem;
+          font-size: 0.58rem;
           color: var(--muted);
           font-weight: 600;
         }
+        .product-name-link { text-decoration: none; }
         .product-name {
           font-family: var(--font-cinzel);
-          font-size: 1.25rem;
+          font-size: clamp(0.95rem, 2.5vw, 1.2rem);
           color: var(--white);
-          margin-bottom: 0.8rem;
-          letter-spacing: 0.05em;
+          margin-bottom: 0.5rem;
+          letter-spacing: 0.04em;
           font-weight: 700;
+          line-height: 1.2;
+          transition: color 0.3s;
         }
+        .product-name-link:hover .product-name { color: var(--gold); }
         .product-desc-short {
           font-family: var(--font-montserrat);
-          font-size: 0.75rem;
+          font-size: 0.73rem;
           color: var(--muted);
           line-height: 1.6;
-          margin-bottom: 2rem;
+          margin-bottom: 1rem;
           flex-grow: 1;
         }
         .price-action {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-top: 1.5rem;
+          gap: 8px;
+          padding-top: 1rem;
           border-top: 1px solid rgba(192, 82, 42, 0.08);
+          flex-wrap: wrap;
         }
         .product-price {
           font-family: var(--font-cinzel);
@@ -153,22 +162,27 @@ export default function ProductCard({ product }) {
         }
         .add-trigger-btn {
           background: none;
-          border: 1px solid var(--gold);
+          border: 1.5px solid var(--gold);
           color: var(--gold);
-          padding: 8px 16px;
+          padding: 9px 14px;
           font-family: var(--font-cinzel);
-          font-size: 0.6rem;
+          font-size: 0.58rem;
           text-transform: uppercase;
-          letter-spacing: 0.2em;
+          letter-spacing: 0.18em;
           font-weight: 900;
-          border-radius: 2px;
+          border-radius: 3px;
           cursor: pointer;
           transition: var(--transition);
+          min-height: 40px;
+          white-space: nowrap;
+          -webkit-tap-highlight-color: transparent;
         }
-        .add-trigger-btn:hover, .add-trigger-btn.added {
+        .add-trigger-btn:hover,
+        .add-trigger-btn.added {
           background: var(--gold);
           color: #f5edd6;
         }
+        .add-trigger-btn:disabled { opacity: 0.75; cursor: default; }
       `}</style>
     </div>
   );

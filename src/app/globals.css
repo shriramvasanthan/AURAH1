@@ -140,12 +140,14 @@ h5 {
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  cursor: none;
-  border-radius: 0;
+  cursor: pointer;
+  border-radius: 4px;
   transition: var(--transition);
   position: relative;
   overflow: hidden;
   text-decoration: none;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-gold::before {
@@ -160,6 +162,10 @@ h5 {
 .btn-gold:hover {
   box-shadow: var(--glow-strong);
   transform: translateY(-2px);
+}
+
+.btn-gold:active {
+  transform: translateY(0);
 }
 
 .btn-gold:hover::before {
@@ -179,10 +185,12 @@ h5 {
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  cursor: none;
+  cursor: pointer;
   border-radius: 3px;
   transition: var(--transition);
   text-decoration: none;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-outline:hover {
@@ -190,6 +198,8 @@ h5 {
   color: #FAF4E8;
   box-shadow: var(--glow);
 }
+
+.btn-outline:active { opacity: 0.85; }
 
 /* ===== Section ===== */
 .section {
@@ -575,10 +585,13 @@ h5 {
   color: var(--white);
   padding: 14px 16px;
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 1rem; /* 16px minimum — prevents iOS auto-zoom */
   border-radius: 3px;
   outline: none;
   transition: var(--transition);
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 48px;
 }
 
 .form-input:focus,
@@ -591,6 +604,7 @@ h5 {
 .form-textarea {
   resize: vertical;
   min-height: 120px;
+  line-height: 1.6;
 }
 
 .form-select option {

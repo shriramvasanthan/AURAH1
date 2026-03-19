@@ -14,7 +14,6 @@ export default function CartPage() {
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState('');
 
-  // Auto-fill form from logged-in user
   useEffect(() => {
     if (user) {
       setForm({
@@ -66,51 +65,49 @@ export default function CartPage() {
             Confirmation will be sent to <strong>{success.email}</strong>.
           </p>
           <div className="success-total">Total Paid: <span className="gold-text-static">{formatPrice(success.total)}</span></div>
-          <Link href="/products" className="btn-gold" style={{ marginTop: '32px', display: 'inline-flex' }}>
+          <Link href="/products" className="btn-gold" style={{ marginTop: '28px' }}>
             Continue Shopping
           </Link>
         </div>
         <style>{`
           .success-page {
-            min-height: 100vh;
+            min-height: 100svh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 120px 20px;
+            padding: 100px 20px 40px;
             background: radial-gradient(ellipse at 50% 50%, rgba(201,168,76,0.06) 0%, transparent 70%), var(--black);
           }
           .success-card {
-            max-width: 560px;
+            max-width: 520px;
             width: 100%;
             background: #FAF4E8;
             border: 1px solid rgba(192,82,42,0.3);
-            border-radius: 4px;
-            padding: 60px 48px;
+            border-radius: 10px;
+            padding: 52px 40px;
             text-align: center;
             animation: fadeInUp 0.6s ease;
             box-shadow: 0 8px 40px rgba(44, 26, 14, 0.12);
           }
           .success-icon {
-            font-size: 4rem;
+            font-size: 3.5rem;
             color: var(--gold);
             animation: pulse-glow 2s ease-in-out infinite;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
           }
           .success-title {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            margin-bottom: 10px;
             background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-shimmer));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
           }
-          .success-sub { font-size: 1rem; color: var(--muted); margin-bottom: 16px; }
-          .success-desc { color: var(--muted); font-size: 0.88rem; line-height: 1.8; margin-bottom: 16px; }
-          .success-total {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            color: var(--muted);
-            letter-spacing: 0.1em;
+          .success-sub { font-size: 0.95rem; color: var(--muted); margin-bottom: 14px; }
+          .success-desc { color: var(--muted); font-size: 0.85rem; line-height: 1.8; margin-bottom: 14px; }
+          .success-total { font-family: var(--font-display); font-size: 0.95rem; color: var(--muted); letter-spacing: 0.1em; }
+          @media (max-width: 480px) {
+            .success-card { padding: 36px 24px; }
           }
         `}</style>
       </div>
@@ -120,11 +117,11 @@ export default function CartPage() {
   return (
     <>
       <div className="cart-page">
-        <div className="page-header">
-          <div className="page-header-bg" />
+        <div className="cart-page-header">
+          <div className="cart-header-bg" />
           <div className="container">
             <div className="section-label" style={{ justifyContent: 'center' }}>Your Selection</div>
-            <h1 className="page-title">
+            <h1 className="cart-page-title">
               Shopping <span className="gold-text">Cart</span>
             </h1>
           </div>
@@ -136,52 +133,84 @@ export default function CartPage() {
               <div className="empty-icon">✦</div>
               <h2>Your cart is empty</h2>
               <p>Discover our premium spices and nuts collection</p>
-              <Link href="/products" className="btn-gold" style={{ marginTop: '24px', display: 'inline-flex' }}>
+              <Link href="/products" className="btn-gold empty-shop-btn">
                 Browse Products
               </Link>
             </div>
           ) : (
             <div className="cart-layout">
               {/* Cart Items */}
-              <div className="cart-items">
-                <div className="cart-header">
+              <div className="cart-items-col">
+                {/* Desktop table header */}
+                <div className="cart-table-header">
                   <span>Product</span>
                   <span>Price</span>
                   <span>Qty</span>
                   <span>Total</span>
                 </div>
+
                 {cart.map((item) => (
                   <div key={item.id} className="cart-row">
+                    {/* Image + Name */}
                     <div className="cart-item-info">
                       <img
                         src={item.image}
                         alt={item.name}
                         className="cart-item-img"
                         onError={(e) => {
-                          e.target.src = `https://placehold.co/80x80/1E1E1E/C9A84C?text=${encodeURIComponent(item.name[0])}`;
+                          e.target.src = `https://placehold.co/80x80/F5EDD6/2C1A0E?text=${encodeURIComponent(item.name[0])}`;
                         }}
                       />
-                      <div>
+                      <div className="cart-item-meta">
                         <div className="cart-item-name">{item.name}</div>
                         <div className="cart-item-unit">{item.unit}</div>
+                        {/* Mobile: price shown here */}
+                        <div className="cart-item-price-mobile">{formatPrice(item.price)}</div>
                       </div>
                     </div>
+
+                    {/* Desktop price */}
                     <div className="cart-item-price">{formatPrice(item.price)}</div>
-                    <div className="qty-controls-small">
-                      <button onClick={() => updateQty(item.id, item.quantity - 1)}>−</button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => updateQty(item.id, item.quantity + 1)}>+</button>
+
+                    {/* Qty */}
+                    <div className="qty-row">
+                      <div className="qty-controls-small">
+                        <button
+                          onClick={() => updateQty(item.id, item.quantity - 1)}
+                          aria-label="Decrease quantity"
+                        >−</button>
+                        <span>{item.quantity}</span>
+                        <button
+                          onClick={() => updateQty(item.id, item.quantity + 1)}
+                          aria-label="Increase quantity"
+                        >+</button>
+                      </div>
+                      {/* Mobile: remove button beside qty */}
+                      <button
+                        className="remove-btn remove-btn-mobile"
+                        onClick={() => removeFromCart(item.id)}
+                        aria-label="Remove item"
+                      >×</button>
                     </div>
+
+                    {/* Total */}
                     <div className="cart-item-total gold-text-static">
                       {formatPrice(item.price * item.quantity)}
                     </div>
-                    <button className="remove-btn" onClick={() => removeFromCart(item.id)}>×</button>
+
+                    {/* Desktop remove */}
+                    <button
+                      className="remove-btn remove-btn-desktop"
+                      onClick={() => removeFromCart(item.id)}
+                      aria-label="Remove item"
+                    >×</button>
                   </div>
                 ))}
+
                 <button className="clear-btn" onClick={clearCart}>Clear Cart</button>
               </div>
 
-              {/* Checkout */}
+              {/* Checkout Panel */}
               <div className="checkout-panel">
                 <div className="order-summary">
                   <h3 className="summary-title">Order Summary</h3>
@@ -203,13 +232,14 @@ export default function CartPage() {
                 <form className="checkout-form" onSubmit={handleSubmit}>
                   <h3 className="checkout-title">Delivery Details</h3>
                   {[
-                    { name: 'customerName', label: 'Full Name', type: 'text', placeholder: 'John Doe' },
-                    { name: 'email', label: 'Email Address', type: 'email', placeholder: 'john@example.com' },
-                    { name: 'phone', label: 'Phone Number', type: 'tel', placeholder: '+1 234 567 8901' },
+                    { name: 'customerName', label: 'Full Name', type: 'text', placeholder: 'John Doe', autoComplete: 'name' },
+                    { name: 'email', label: 'Email Address', type: 'email', placeholder: 'john@example.com', autoComplete: 'email' },
+                    { name: 'phone', label: 'Phone Number', type: 'tel', placeholder: '+1 234 567 8901', autoComplete: 'tel' },
                   ].map((field) => (
                     <div className="form-group" key={field.name}>
-                      <label className="form-label">{field.label}</label>
+                      <label className="form-label" htmlFor={`cart-${field.name}`}>{field.label}</label>
                       <input
+                        id={`cart-${field.name}`}
                         className="form-input"
                         type={field.type}
                         name={field.name}
@@ -217,12 +247,14 @@ export default function CartPage() {
                         value={form[field.name]}
                         onChange={handleChange}
                         required
+                        autoComplete={field.autoComplete}
                       />
                     </div>
                   ))}
                   <div className="form-group">
-                    <label className="form-label">Delivery Address</label>
+                    <label className="form-label" htmlFor="cart-address">Delivery Address</label>
                     <textarea
+                      id="cart-address"
                       className="form-textarea"
                       name="address"
                       placeholder="Enter your full delivery address..."
@@ -231,14 +263,9 @@ export default function CartPage() {
                       required
                     />
                   </div>
-                  {error && <p className="form-error">{error}</p>}
+                  {error && <p className="form-error" role="alert">{error}</p>}
                   <button type="submit" className="btn-gold submit-btn" disabled={submitting}>
-                    {submitting ? 'Placing Order...' : 'Place Order'}
-                    {!submitting && (
-                      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path d="M5 12h14M12 5l7 7-7 7" />
-                      </svg>
-                    )}
+                    {submitting ? 'Placing Order…' : 'Place Order →'}
                   </button>
                 </form>
               </div>
@@ -248,166 +275,263 @@ export default function CartPage() {
       </div>
 
       <style>{`
-        .cart-page { min-height: 100vh; }
-        .page-header {
-          padding: 140px 0 60px;
+        .cart-page { min-height: 100svh; }
+
+        .cart-page-header {
+          padding: 110px 0 48px;
           position: relative;
           overflow: hidden;
           text-align: center;
         }
-        .page-header-bg {
+        .cart-header-bg {
           position: absolute;
           inset: 0;
           background: radial-gradient(ellipse at 50% 100%, rgba(192,82,42,0.07) 0%, transparent 70%);
           border-bottom: 1px solid rgba(192,82,42,0.1);
         }
-        .page-title { font-size: clamp(2rem, 5vw, 4rem); }
-        .cart-content { padding-top: 60px; padding-bottom: 100px; }
+        .cart-page-title { font-size: clamp(2rem, 5vw, 4rem); }
+
+        .cart-content { padding-top: 48px; padding-bottom: 80px; }
+
         .cart-layout {
           display: grid;
-          grid-template-columns: 1fr 400px;
-          gap: 48px;
+          grid-template-columns: 1fr 380px;
+          gap: 40px;
           align-items: start;
         }
-        .cart-header {
+
+        .cart-table-header {
           display: grid;
           grid-template-columns: 2fr 1fr 1fr 1fr;
-          gap: 16px;
-          padding: 12px 16px;
+          gap: 12px;
+          padding: 10px 12px;
           font-family: var(--font-display);
-          font-size: 0.65rem;
+          font-size: 0.62rem;
           letter-spacing: 0.2em;
           text-transform: uppercase;
           color: var(--gold-dark);
           border-bottom: 1px solid rgba(192,82,42,0.15);
           margin-bottom: 4px;
         }
+
         .cart-row {
           display: grid;
           grid-template-columns: 2fr 1fr 1fr 1fr auto;
-          gap: 16px;
+          gap: 12px;
           align-items: center;
-          padding: 20px 16px;
+          padding: 18px 12px;
           border-bottom: 1px solid rgba(192,82,42,0.08);
           transition: background 0.2s;
         }
-        .cart-row:hover { background: rgba(192,82,42,0.03); }
-        .cart-item-info { display: flex; align-items: center; gap: 16px; }
-        .cart-item-img {
-          width: 64px;
-          height: 64px;
-          object-fit: cover;
-          border-radius: 3px;
-          border: 1px solid rgba(192,82,42,0.12);
+        .cart-row:hover { background: rgba(192,82,42,0.025); }
+
+        .cart-item-info {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          min-width: 0;
         }
-        .cart-item-name { font-family: var(--font-display); font-size: 0.88rem; color: var(--white); margin-bottom: 4px; }
-        .cart-item-unit { font-size: 0.72rem; color: var(--muted); }
-        .cart-item-price { font-size: 0.9rem; color: var(--muted); }
+        .cart-item-img {
+          width: 60px;
+          height: 60px;
+          object-fit: cover;
+          border-radius: 4px;
+          border: 1px solid rgba(192,82,42,0.12);
+          flex-shrink: 0;
+        }
+        .cart-item-meta { min-width: 0; }
+        .cart-item-name {
+          font-family: var(--font-display);
+          font-size: 0.85rem;
+          color: var(--white);
+          margin-bottom: 3px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .cart-item-unit { font-size: 0.7rem; color: var(--muted); }
+        .cart-item-price-mobile { display: none; }
+        .cart-item-price { font-size: 0.88rem; color: var(--muted); }
+
+        .qty-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
         .qty-controls-small {
           display: flex;
           align-items: center;
           border: 1.5px solid rgba(192,82,42,0.2);
-          border-radius: 2px;
+          border-radius: 3px;
           overflow: hidden;
-          font-size: 0.85rem;
         }
         .qty-controls-small button {
-          width: 30px;
-          height: 30px;
+          width: 34px;
+          height: 34px;
           background: var(--dark-3);
           border: none;
           color: var(--gold);
           cursor: pointer;
-          font-size: 1rem;
+          font-size: 1.1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.2s;
+          flex-shrink: 0;
+          -webkit-tap-highlight-color: transparent;
         }
+        .qty-controls-small button:hover { background: var(--dark-4); }
+        .qty-controls-small button:active { background: rgba(192, 82, 42, 0.15); }
         .qty-controls-small span {
-          width: 36px;
+          width: 34px;
           text-align: center;
           background: var(--dark-2);
-          line-height: 30px;
+          line-height: 34px;
           font-size: 0.85rem;
+          flex-shrink: 0;
         }
-        .cart-item-total { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; }
+        .cart-item-total { font-family: var(--font-display); font-size: 0.92rem; font-weight: 700; }
+
         .remove-btn {
           background: none;
           border: none;
           color: var(--muted);
-          font-size: 1.3rem;
+          font-size: 1.4rem;
           cursor: pointer;
           transition: color 0.2s;
           line-height: 1;
-          padding: 0 4px;
+          padding: 4px 6px;
+          border-radius: 4px;
+          min-width: 36px;
+          min-height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          -webkit-tap-highlight-color: transparent;
         }
-        .remove-btn:hover { color: #F87171; }
+        .remove-btn:hover { color: #ef4444; background: rgba(239,68,68,0.08); }
+        .remove-btn-mobile { display: none; }
+
         .clear-btn {
-          margin-top: 16px;
+          margin-top: 14px;
           background: none;
           border: none;
           color: var(--muted);
           font-family: var(--font-display);
-          font-size: 0.65rem;
+          font-size: 0.62rem;
           letter-spacing: 0.2em;
           text-transform: uppercase;
           cursor: pointer;
           transition: color 0.3s;
-          padding: 8px 0;
+          padding: 10px 0;
+          min-height: 40px;
         }
-        .clear-btn:hover { color: #F87171; }
+        .clear-btn:hover { color: #ef4444; }
+
         .checkout-panel {
           position: sticky;
-          top: 90px;
+          top: 80px;
           display: flex;
           flex-direction: column;
-          gap: 24px;
+          gap: 20px;
         }
         .order-summary {
           background: #FAF4E8;
           border: 1px solid rgba(192,82,42,0.2);
-          border-radius: 4px;
-          padding: 28px;
-          box-shadow: 0 2px 12px rgba(44, 26, 14, 0.06);
+          border-radius: 8px;
+          padding: 24px;
+          box-shadow: 0 2px 16px rgba(44, 26, 14, 0.06);
         }
         .summary-title, .checkout-title {
           font-family: var(--font-display);
-          font-size: 0.75rem;
+          font-size: 0.7rem;
           letter-spacing: 0.3em;
           text-transform: uppercase;
           color: var(--gold);
-          margin-bottom: 20px;
+          margin-bottom: 16px;
         }
         .summary-row {
           display: flex;
           justify-content: space-between;
-          font-size: 0.88rem;
-          padding: 8px 0;
+          font-size: 0.86rem;
+          padding: 7px 0;
           color: var(--muted);
         }
-        .summary-divider { height: 1px; background: rgba(192,82,42,0.15); margin: 12px 0; }
-        .total-row { font-size: 1.05rem; font-weight: 600; color: var(--white); }
+        .summary-divider { height: 1px; background: rgba(192,82,42,0.15); margin: 10px 0; }
+        .total-row { font-size: 1rem; font-weight: 600; color: var(--white); }
+
         .checkout-form {
           background: #FAF4E8;
           border: 1px solid rgba(192,82,42,0.15);
-          border-radius: 4px;
-          padding: 28px;
-          box-shadow: 0 2px 12px rgba(44, 26, 14, 0.06);
+          border-radius: 8px;
+          padding: 24px;
+          box-shadow: 0 2px 16px rgba(44, 26, 14, 0.06);
         }
-        .submit-btn { width: 100%; justify-content: center; margin-top: 8px; }
-        .form-error { color: #F87171; font-size: 0.8rem; margin-bottom: 12px; }
+        .submit-btn {
+          width: 100%;
+          justify-content: center;
+          margin-top: 8px;
+          font-size: 0.72rem;
+          letter-spacing: 0.25em;
+          min-height: 52px;
+        }
+        .form-error { color: #ef4444; font-size: 0.8rem; margin-bottom: 10px; line-height: 1.5; }
+
         .empty-cart {
           text-align: center;
           padding: 80px 20px;
           color: var(--muted);
         }
-        .empty-icon { font-size: 4rem; color: rgba(201,168,76,0.2); margin-bottom: 24px; }
+        .empty-icon { font-size: 3.5rem; color: rgba(201,168,76,0.2); margin-bottom: 20px; }
         .empty-cart h2 { font-family: var(--font-display); font-size: 1.8rem; color: var(--white); margin-bottom: 8px; }
+        .empty-cart p { font-size: 0.9rem; margin-bottom: 24px; }
+        .empty-shop-btn { margin-top: 8px; }
+
+        /* ===== Responsive ===== */
         @media (max-width: 1024px) {
-          .cart-layout { grid-template-columns: 1fr; }
+          .cart-layout { grid-template-columns: 1fr; gap: 32px; }
           .checkout-panel { position: static; }
         }
+
         @media (max-width: 640px) {
-          .cart-header { display: none; }
-          .cart-row { grid-template-columns: 1fr auto auto; grid-template-rows: auto auto; gap: 12px; }
-          .cart-item-info { grid-column: 1 / -1; }
+          /* Mobile: hide the desktop table header */
+          .cart-table-header { display: none; }
+          /* Mobile: reflow each row as a card */
+          .cart-row {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+            gap: 10px;
+            padding: 16px 12px;
+            background: rgba(192,82,42,0.02);
+            border-radius: 6px;
+            border: 1px solid rgba(192,82,42,0.08);
+            margin-bottom: 8px;
+          }
+          .cart-row:hover { background: rgba(192,82,42,0.04); }
+          /* Hide desktop-specific cells */
+          .cart-item-price { display: none; }
+          .remove-btn-desktop { display: none; }
+          /* Show mobile alternatives */
+          .cart-item-price-mobile {
+            display: block;
+            font-size: 0.78rem;
+            color: var(--gold);
+            font-weight: 700;
+            font-family: var(--font-display);
+            margin-top: 3px;
+          }
+          .remove-btn-mobile { display: flex; }
+          /* qty row: space between qty controls and total */
+          .qty-row { justify-content: space-between; }
+          .cart-item-total { font-size: 1rem; }
+          /* Checkout panel */
+          .checkout-form, .order-summary { padding: 20px 18px; }
+        }
+
+        @media (max-width: 480px) {
+          .cart-page-header { padding: 90px 0 32px; }
+          .cart-content { padding-top: 24px; padding-bottom: 60px; }
+          .cart-item-img { width: 52px; height: 52px; }
         }
       `}</style>
     </>

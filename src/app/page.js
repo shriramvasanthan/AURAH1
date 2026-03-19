@@ -26,7 +26,6 @@ const SoftRevealText = ({ children, className }) => {
 };
 
 export default function HomePage() {
-    // Pre-populate with 9 skeleton products to match the fetch count and stabilize grid
     const [products, setProducts] = useState(Array(9).fill({ id: 'loading', loading: true }));
     const [content, setContent] = useState({
         hero_est: 'EST. 1998',
@@ -50,8 +49,8 @@ export default function HomePage() {
     
     const containerRef = useRef(null);
     const { scrollY } = useScroll();
-    const yHero = useTransform(scrollY, [0, 500], [0, 150]);
-    const yHeroDesc = useTransform(scrollY, [0, 500], [0, 200]);
+    const yHero = useTransform(scrollY, [0, 500], [0, 80]);
+    const yHeroDesc = useTransform(scrollY, [0, 500], [0, 120]);
     const opacityHero = useTransform(scrollY, [0, 400], [1, 0]);
     const scaleHeritage = useTransform(scrollY, [1200, 2000], [0.95, 1.05]);
 
@@ -73,7 +72,7 @@ export default function HomePage() {
 
     return (
         <div ref={containerRef} className="flagship-root">
-            {/* Cinematic Hero - Exact Heritage Match */}
+            {/* Cinematic Hero */}
             <section className="hero-primary">
                 <div className="hero-visual">
                     <Image 
@@ -124,7 +123,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* The Staggered Collection - 3 Column Flagship Grid */}
+            {/* Featured Products */}
             <section className="collection-flagship">
                 <div className="container-flagship">
                     <div className="flagship-header">
@@ -144,12 +143,12 @@ export default function HomePage() {
                         {products.map((product, i) => (
                             <motion.div 
                                 key={product.id === 'loading' ? `loading-${i}` : product.id}
-                                initial={{ opacity: 0, y: 60, rotate: i % 2 === 0 ? -1 : 1 }}
-                                whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+                                initial={{ opacity: 0, y: 60 }}
+                                whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, margin: "-50px" }}
                                 transition={{ 
                                     duration: 1.2, 
-                                    delay: (i % 3) * 0.1,
+                                    delay: (i % 3) * 0.08,
                                     ease: [0.23, 1, 0.32, 1]
                                 }}
                                 className={`grid-item-flagship ${i % 3 === 1 ? 'offset-mid' : i % 3 === 2 ? 'offset-deep' : ''}`}
@@ -165,7 +164,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* The Heritage - 1:1 Flagship Layout */}
+            {/* Heritage Section */}
             <section className="heritage-section">
                 <div className="container-flagship split-view">
                     <motion.div 
@@ -177,7 +176,7 @@ export default function HomePage() {
                                 src={content.heritage_bg} 
                                 alt="Heritage Background" 
                                 fill
-                                sizes="(max-width: 1024px) 100vw, 50vw"
+                                sizes="(max-width: 768px) 100vw, 50vw"
                                 style={{ 
                                     objectFit: 'cover',
                                     mixBlendMode: 'luminosity',
@@ -196,7 +195,7 @@ export default function HomePage() {
                         <SoftRevealText>
                             <p className="heritage-p" dangerouslySetInnerHTML={{ __html: content.heritage_desc }} />
                         </SoftRevealText>
-                        <Link href="/story" className="btn-outline" style={{ marginTop: '2.5rem' }}>{content.heritage_btn_text}</Link>
+                        <Link href="/story" className="btn-outline heritage-btn">{content.heritage_btn_text}</Link>
                     </div>
                 </div>
             </section>
@@ -207,41 +206,50 @@ export default function HomePage() {
                     color: var(--white);
                     min-height: 100vh;
                 }
+                /* ===== HERO ===== */
                 .hero-primary {
-                    height: 100vh;
+                    height: 100svh;
+                    min-height: 600px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     position: relative;
                     text-align: center;
-                    background: radial-gradient(circle at 60% 40%, rgba(192, 82, 42, 0.05) 0%, transparent 60%);
+                    overflow: hidden;
+                }
+                .hero-visual {
+                    position: absolute;
+                    inset: 0;
+                    z-index: 0;
                 }
                 .hero-overlay-content {
                     z-index: 10;
-                    margin-top: -50px;
+                    padding: 0 1.5rem;
+                    width: 100%;
                 }
                 .heritage-top {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: 1.5rem;
+                    gap: 1rem;
                     font-family: var(--font-cinzel);
-                    font-size: 0.6rem;
-                    letter-spacing: 0.5em;
+                    font-size: 0.55rem;
+                    letter-spacing: 0.45em;
                     color: var(--gold);
-                    margin-bottom: 3rem;
+                    margin-bottom: 2rem;
                     font-weight: 800;
+                    flex-wrap: wrap;
                 }
-                .heritage-top .star { font-size: 1rem; }
+                .heritage-top .star { font-size: 0.9rem; }
                 
                 .flagship-title {
                     font-family: var(--font-cinzel);
-                    font-size: clamp(3.5rem, 9vw, 9.5rem);
+                    font-size: clamp(3rem, 9vw, 9.5rem);
                     font-weight: 900;
-                    line-height: 0.85;
-                    margin-bottom: 3rem;
+                    line-height: 0.9;
+                    margin-bottom: 2rem;
                     letter-spacing: -0.03em;
-                    color: var(--white); /* Dark Brown on Light Cream */
+                    color: var(--white);
                 }
                 .title-serif {
                     font-style: italic;
@@ -250,29 +258,31 @@ export default function HomePage() {
                 }
                 .flagship-desc {
                     font-family: var(--font-montserrat);
-                    font-size: 1.15rem;
+                    font-size: clamp(0.9rem, 2.5vw, 1.15rem);
                     line-height: 1.8;
                     color: var(--muted);
-                    max-width: 650px;
-                    margin: 0 auto 4rem;
+                    max-width: 560px;
+                    margin: 0 auto 2.5rem;
                     font-style: italic;
                     font-weight: 500;
                 }
                 .hero-actions-group {
                     display: flex;
                     justify-content: center;
-                    gap: 2.5rem;
+                    gap: 1.2rem;
+                    flex-wrap: wrap;
                 }
                 .scroll-hint {
                     position: absolute;
-                    bottom: 4rem;
+                    bottom: 3rem;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    gap: 2rem;
+                    gap: 1.5rem;
+                    z-index: 10;
                 }
                 .hint-text {
-                    font-size: 0.5rem;
+                    font-size: 0.45rem;
                     text-transform: uppercase;
                     letter-spacing: 0.6em;
                     color: var(--gold);
@@ -281,96 +291,95 @@ export default function HomePage() {
                 }
                 .hint-line {
                     width: 1px;
-                    height: 80px;
+                    height: 60px;
                     background: linear-gradient(to bottom, var(--gold), transparent);
                 }
+
+                /* ===== COLLECTION ===== */
                 .collection-flagship {
-                    padding: 200px 0;
+                    padding: 120px 0;
                     border-top: 1px solid rgba(192, 82, 42, 0.1);
                 }
                 .container-flagship {
                     max-width: var(--container-max);
                     margin: 0 auto;
-                    padding: 0 60px;
+                    padding: 0 3rem;
                 }
                 .flagship-header {
                     display: flex;
                     justify-content: space-between;
                     align-items: flex-end;
-                    margin-bottom: 120px;
-                    padding-bottom: 40px;
+                    margin-bottom: 80px;
+                    padding-bottom: 32px;
                     border-bottom: 1px solid rgba(192, 82, 42, 0.1);
+                    gap: 1rem;
+                    flex-wrap: wrap;
                 }
                 .pre-label {
                     display: block;
                     font-family: var(--font-cinzel);
-                    font-size: 0.6rem;
+                    font-size: 0.55rem;
                     letter-spacing: 0.4em;
                     color: var(--gold);
-                    margin-bottom: 1rem;
+                    margin-bottom: 0.8rem;
                     font-weight: 800;
                 }
                 .flagship-section-title {
                     font-family: var(--font-cinzel);
-                    font-size: 4rem;
+                    font-size: clamp(2rem, 5vw, 4rem);
                     letter-spacing: 0.05em;
                 }
                 .section-subtitle {
                     font-family: var(--font-montserrat);
-                    font-size: 0.95rem;
+                    font-size: 0.9rem;
                     color: var(--muted);
-                    margin-top: 1rem;
+                    margin-top: 0.8rem;
                     font-weight: 500;
                     letter-spacing: 0.02em;
-                    max-width: 600px;
+                    max-width: 500px;
                 }
                 .flagship-counter {
                     font-family: var(--font-montserrat);
-                    font-size: 0.65rem;
+                    font-size: 0.6rem;
                     letter-spacing: 0.3em;
                     text-transform: uppercase;
                     color: var(--muted);
                     font-weight: 800;
+                    white-space: nowrap;
                 }
                 .flagship-grid {
                     display: grid;
                     grid-template-columns: repeat(3, 1fr);
-                    gap: 60px;
-                    min-height: 800px; /* Prevent collapse */
+                    gap: 40px;
+                    min-height: 600px;
                 }
                 .skeleton-card {
                     width: 100%;
                     aspect-ratio: 1/1.5;
-                    background: rgba(192, 82, 42, 0.03);
+                    background: rgba(192, 82, 42, 0.04);
                     border-radius: 4px;
+                    border: 1px solid rgba(192, 82, 42, 0.06);
                 }
-                .offset-mid { margin-top: 100px; }
-                .offset-deep { margin-top: 200px; }
-                
+                .offset-mid { margin-top: 80px; }
+                .offset-deep { margin-top: 160px; }
+
+                /* ===== HERITAGE ===== */
                 .heritage-section {
                     background: var(--dark);
-                    padding: 200px 0;
+                    padding: 120px 0;
                 }
                 .split-view {
                     display: grid;
                     grid-template-columns: 1fr 1fr;
-                    gap: 120px;
+                    gap: 80px;
                     align-items: center;
                 }
                 .heritage-image-frame {
                     aspect-ratio: 4/5;
                     border: 1px solid rgba(192, 82, 42, 0.15);
                     position: relative;
-                    padding: 60px;
+                    padding: 40px;
                     background: #ede4cc;
-                }
-                .heritage-img-inner {
-                    width: 100%;
-                    height: 100%;
-                    background-position: center;
-                    background-size: cover;
-                    mix-blend-mode: luminosity;
-                    opacity: 0.6;
                 }
                 .frame-overlay {
                     position: absolute;
@@ -378,45 +387,106 @@ export default function HomePage() {
                     left: 50%;
                     transform: translate(-50%, -50%);
                     font-family: var(--font-cinzel);
-                    font-size: 8rem;
+                    font-size: clamp(4rem, 10vw, 8rem);
                     opacity: 0.08;
                     letter-spacing: 0.25em;
                     pointer-events: none;
                 }
                 .tag-gold {
                     font-family: var(--font-cinzel);
-                    font-size: 0.7rem;
+                    font-size: 0.65rem;
                     text-transform: uppercase;
                     letter-spacing: 0.35em;
                     color: var(--gold);
-                    margin-bottom: 2.5rem;
+                    margin-bottom: 2rem;
                     display: block;
                     font-weight: 900;
                 }
                 .heritage-h {
                     font-family: var(--font-cinzel);
-                    font-size: 5rem;
-                    margin-bottom: 3.5rem;
+                    font-size: clamp(2.5rem, 5vw, 5rem);
+                    margin-bottom: 2.5rem;
                     line-height: 1;
                     letter-spacing: -0.01em;
                 }
                 .heritage-p {
                     font-family: var(--font-montserrat);
-                    font-size: 1.25rem;
+                    font-size: 1.05rem;
                     line-height: 1.8;
                     color: var(--muted);
                     font-style: italic;
                     font-weight: 500;
                 }
+                .heritage-btn {
+                    margin-top: 2.5rem;
+                    display: inline-flex;
+                }
+
+                /* ===== RESPONSIVE ===== */
                 @media (max-width: 1200px) {
                     .flagship-grid { grid-template-columns: 1fr 1fr; }
-                    .offset-deep { margin-top: 100px; }
+                    .offset-deep { margin-top: 80px; }
                 }
                 @media (max-width: 1024px) {
-                    .flagship-grid, .split-view { grid-template-columns: 1fr; }
+                    .flagship-grid { grid-template-columns: 1fr 1fr; }
+                    .split-view {
+                        grid-template-columns: 1fr;
+                        gap: 48px;
+                    }
+                    .heritage-section, .collection-flagship { padding: 80px 0; }
+                    .container-flagship { padding: 0 2rem; }
+                    .flagship-header { margin-bottom: 48px; }
+                }
+                @media (max-width: 768px) {
+                    .flagship-grid {
+                        grid-template-columns: 1fr 1fr;
+                        gap: 20px;
+                    }
                     .offset-mid, .offset-deep { margin-top: 0; }
-                    .collection-flagship, .heritage-section { padding: 100px 0; }
-                    .heritage-h { font-size: 3.5rem; }
+                    .container-flagship { padding: 0 1.25rem; }
+                    .flagship-header { margin-bottom: 36px; }
+                    .collection-flagship { padding: 64px 0; }
+                    .heritage-section { padding: 64px 0; }
+                    .flagship-title {
+                        font-size: clamp(2.5rem, 12vw, 5rem);
+                        line-height: 0.95;
+                    }
+                }
+                @media (max-width: 480px) {
+                    .flagship-grid {
+                        grid-template-columns: 1fr;
+                        gap: 16px;
+                        min-height: unset;
+                    }
+                    .hero-primary { height: 100svh; min-height: 580px; }
+                    .hero-overlay-content { margin-top: 0; padding: 0 1rem; }
+                    .heritage-top {
+                        gap: 0.8rem;
+                        letter-spacing: 0.3em;
+                        font-size: 0.5rem;
+                    }
+                    .flagship-title {
+                        font-size: clamp(2.2rem, 14vw, 3.5rem);
+                        margin-bottom: 1.25rem;
+                    }
+                    .flagship-desc {
+                        font-size: 0.85rem;
+                        margin-bottom: 2rem;
+                    }
+                    .hero-actions-group {
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 0.8rem;
+                    }
+                    .scroll-hint { bottom: 2rem; }
+                    .hint-line { height: 40px; }
+                    .collection-flagship { padding: 48px 0; }
+                    .heritage-section { padding: 48px 0; }
+                    .heritage-image-frame { padding: 20px; }
+                }
+                @media (max-width: 360px) {
+                    .flagship-title { font-size: clamp(2rem, 15vw, 3rem); }
+                    .hero-actions-group { gap: 0.6rem; }
                 }
             `}</style>
 
@@ -425,37 +495,62 @@ export default function HomePage() {
                     background: linear-gradient(135deg, #8b3c1e, #c0522a, #d96a38);
                     border: none;
                     color: #f5edd6;
-                    padding: 18px 48px;
+                    padding: 16px 36px;
                     font-family: var(--font-cinzel);
-                    font-size: 0.75rem;
-                    letter-spacing: 0.35em;
+                    font-size: 0.72rem;
+                    letter-spacing: 0.3em;
                     text-transform: uppercase;
                     font-weight: 900;
                     border-radius: 4px;
                     text-decoration: none;
                     transition: var(--transition);
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 52px;
+                    min-width: 160px;
+                    text-align: center;
                 }
                 .btn-gold:hover {
-                    transform: translateY(-4px);
+                    transform: translateY(-3px);
                     box-shadow: var(--glow-strong);
                 }
+                .btn-gold:active { transform: translateY(0); }
                 .btn-outline {
                     background: transparent;
                     border: 2px solid var(--gold);
                     color: var(--gold);
-                    padding: 18px 48px;
+                    padding: 14px 36px;
                     font-family: var(--font-cinzel);
-                    font-size: 0.75rem;
-                    letter-spacing: 0.35em;
+                    font-size: 0.72rem;
+                    letter-spacing: 0.3em;
                     text-transform: uppercase;
                     font-weight: 900;
                     border-radius: 4px;
                     text-decoration: none;
                     transition: var(--transition);
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 52px;
+                    min-width: 160px;
+                    text-align: center;
                 }
                 .btn-outline:hover {
                     background: var(--gold);
                     color: var(--black);
+                }
+                .btn-outline:active { opacity: 0.8; }
+                @media (max-width: 480px) {
+                    .btn-gold, .btn-outline {
+                        padding: 14px 28px;
+                        font-size: 0.65rem;
+                        min-width: 140px;
+                        width: 100%;
+                        max-width: 280px;
+                    }
                 }
             `}</style>
         </div>

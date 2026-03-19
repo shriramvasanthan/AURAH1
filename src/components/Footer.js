@@ -4,9 +4,7 @@ import Link from 'next/link';
 
 export default function Footer() {
   const [content, setContent] = useState({
-    footer_cta_text: 'Ready to Elevate Your Kitchen?',
-    footer_cta_btn: 'Shop Now',
-    footer_desc: 'Hand-selected specimens of nature’s most intense character.',
+    footer_desc: 'Hand-selected specimens of nature\'s most intense character.',
     footer_email: 'curator@aurah.com',
     footer_address: 'Malabar Coast, India',
     footer_ig: '#',
@@ -27,18 +25,14 @@ export default function Footer() {
 
   return (
     <footer className="footer-container">
-      <div className="footer-cta-bar">
-        <h3 className="cta-heading">{content.footer_cta_text}</h3>
-        <Link href="/products" className="btn-gold">{content.footer_cta_btn}</Link>
-      </div>
 
       <div className="footer-main-grid">
         <div className="footer-col brand-info">
           <h2 className="footer-logo">AURAH</h2>
           <p className="footer-desc">{content.footer_desc}</p>
           <div className="social-links">
-            <a href={content.footer_ig} target="_blank" rel="noopener noreferrer">IG</a>
-            <a href={content.footer_tw} target="_blank" rel="noopener noreferrer">TW</a>
+            <a href={content.footer_ig} target="_blank" rel="noopener noreferrer" aria-label="Instagram">IG</a>
+            <a href={content.footer_tw} target="_blank" rel="noopener noreferrer" aria-label="Twitter">TW</a>
           </div>
         </div>
 
@@ -75,72 +69,41 @@ export default function Footer() {
         .footer-container {
           background: var(--dark-2);
           color: var(--white);
-          padding: 100px 0 40px;
+          padding: 80px 0 32px;
           border-top: 1px solid rgba(192, 82, 42, 0.08);
-        }
-        .footer-cta-bar {
-          text-align: center;
-          margin-bottom: 120px;
-          padding: 0 20px;
-        }
-        .cta-heading {
-          font-family: var(--font-cinzel);
-          font-size: clamp(2rem, 5vw, 4rem);
-          margin-bottom: 40px;
-          color: var(--white);
-          letter-spacing: 0.05em;
-        }
-        .btn-gold {
-          background: linear-gradient(135deg, #8b3c1e, #c0522a, #d96a38);
-          border: none;
-          color: #f5edd6;
-          padding: 16px 40px;
-          font-family: var(--font-cinzel);
-          font-size: 0.75rem;
-          letter-spacing: 0.3em;
-          text-transform: uppercase;
-          font-weight: 900;
-          border-radius: 4px;
-          text-decoration: none;
-          display: inline-block;
-          transition: var(--transition);
-        }
-        .btn-gold:hover {
-          transform: translateY(-4px);
-          box-shadow: var(--glow-strong);
         }
         .footer-main-grid {
           max-width: var(--container-max);
           margin: 0 auto;
-          padding: 0 40px;
+          padding: 0 3rem;
           display: grid;
           grid-template-columns: 2fr 1fr 1fr 1.5fr;
-          gap: 60px;
-          margin-bottom: 80px;
+          gap: 48px;
+          margin-bottom: 60px;
         }
         .footer-logo {
           font-family: var(--font-cinzel);
-          font-size: 2.5rem;
+          font-size: 2.2rem;
           letter-spacing: 0.2em;
-          margin-bottom: 20px;
+          margin-bottom: 16px;
         }
         .footer-desc {
           font-family: var(--font-montserrat);
-          font-size: 0.9rem;
+          font-size: 0.88rem;
           line-height: 1.6;
           color: var(--muted);
-          max-width: 300px;
-          margin-bottom: 30px;
+          max-width: 280px;
+          margin-bottom: 24px;
           font-style: italic;
         }
         .footer-label {
           display: block;
           font-family: var(--font-cinzel);
-          font-size: 0.65rem;
+          font-size: 0.6rem;
           text-transform: uppercase;
           letter-spacing: 0.3em;
           color: var(--gold);
-          margin-bottom: 30px;
+          margin-bottom: 24px;
           font-weight: 800;
         }
         .footer-list {
@@ -148,36 +111,36 @@ export default function Footer() {
           padding: 0;
         }
         .footer-list li {
-          margin-bottom: 15px;
+          margin-bottom: 12px;
         }
         .footer-list a {
           text-decoration: none;
           color: var(--white);
           font-family: var(--font-cinzel);
-          font-size: 0.7rem;
+          font-size: 0.68rem;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.2em;
+          letter-spacing: 0.18em;
           transition: var(--transition);
           opacity: 0.6;
+          display: inline-block;
+          padding: 4px 0;
+          min-height: 32px;
         }
-        .footer-list a:hover {
-          opacity: 1;
-          color: var(--gold);
-        }
+        .footer-list a:hover { opacity: 1; color: var(--gold); }
         .contact-info p {
           font-family: var(--font-montserrat);
-          font-size: 0.85rem;
-          margin-bottom: 10px;
+          font-size: 0.83rem;
+          margin-bottom: 8px;
           color: var(--muted);
           font-weight: 600;
         }
         .footer-bottom {
           border-top: 1px solid rgba(192, 82, 42, 0.08);
-          padding-top: 40px;
+          padding: 28px 3rem 0;
           text-align: center;
           font-family: var(--font-montserrat);
-          font-size: 0.65rem;
+          font-size: 0.6rem;
           letter-spacing: 0.2em;
           text-transform: uppercase;
           color: var(--muted);
@@ -185,7 +148,7 @@ export default function Footer() {
         }
         .social-links {
           display: flex;
-          gap: 20px;
+          gap: 16px;
         }
         .social-links a {
           text-decoration: none;
@@ -195,21 +158,39 @@ export default function Footer() {
           font-weight: 900;
           opacity: 0.5;
           transition: var(--transition);
+          min-width: 44px;
+          min-height: 44px;
+          display: flex;
+          align-items: center;
         }
-        .social-links a:hover {
-          opacity: 1;
-          color: var(--gold);
-        }
+        .social-links a:hover { opacity: 1; color: var(--gold); }
+
+        /* ===== Responsive ===== */
         @media (max-width: 1024px) {
           .footer-main-grid {
             grid-template-columns: 1fr 1fr;
-            gap: 40px;
+            gap: 36px;
           }
+          .footer-bottom { padding: 24px 2rem 0; }
         }
         @media (max-width: 640px) {
           .footer-main-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            padding: 0 1.25rem;
           }
+          .footer-cta-bar { margin-bottom: 48px; }
+          .footer-logo { font-size: 1.8rem; }
+          .footer-desc { max-width: 100%; font-size: 0.82rem; }
+          .footer-container { padding: 56px 0 28px; }
+          .footer-bottom { padding: 20px 1.25rem 0; }
+        }
+        @media (max-width: 400px) {
+          .footer-main-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+          }
+          .footer-cta-btn { width: 100%; max-width: 280px; }
         }
       `}</style>
     </footer>

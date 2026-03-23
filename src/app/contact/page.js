@@ -51,15 +51,15 @@ export default function ContactPage() {
           <div className="contact-info">
             <div className="info-block">
               <h3>General Inquiries</h3>
-              <p>curator@aurah.com</p>
+              <p>aurahmadurai@gmail.com</p>
             </div>
             <div className="info-block">
               <h3>Collection Curator</h3>
-              <p>Malabar Coast, Heritage Estate<br />Kerala, India</p>
+              <p>Athens of the East : Madurai TamilNadu</p>
             </div>
             <div className="info-block">
               <h3>Wholesale &amp; Partnerships</h3>
-              <p>noble@aurah.com</p>
+              <p>aurah2023@gmail.com</p>
             </div>
           </div>
 

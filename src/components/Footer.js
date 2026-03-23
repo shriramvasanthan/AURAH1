@@ -5,8 +5,8 @@ import Link from 'next/link';
 export default function Footer() {
   const [content, setContent] = useState({
     footer_desc: 'Hand-selected specimens of nature\'s most intense character.',
-    footer_email: 'curator@aurah.com',
-    footer_address: 'Malabar Coast, India',
+    footer_email: 'aurahmadurai@gmail.com',
+    footer_address: 'Athens of the East : Madurai TamilNadu',
     footer_ig: '#',
     footer_tw: '#',
     footer_tagline: 'Explore. Preserve. Elevate.'

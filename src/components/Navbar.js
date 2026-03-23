@@ -111,10 +111,10 @@ export default function Navbar() {
         {isCollapsed && (
           <motion.div
             className="nav-pill"
-            initial={{ opacity: 0, scaleX: 0.4, scaleY: 0.4 }}
-            animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
-            exit={{ opacity: 0, scaleX: 0.4, scaleY: 0.4 }}
-            transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
+            initial={{ opacity: 0, scale: 0.4, x: '-50%', y: -20 }}
+            animate={{ opacity: 1, scale: 1, x: '-50%', y: 0 }}
+            exit={{ opacity: 0, scale: 0.4, x: '-50%', y: -20 }}
+            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
           >
             <Link href="/" className="pill-logo">
               <span className="pill-star">✦</span>
@@ -198,7 +198,7 @@ export default function Navbar() {
           text-decoration: none;
           overflow: hidden;
           display: block;
-          height: 1.2em;
+          height: 1.2rem;
           position: relative;
         }
         .nav-link-inner {
@@ -216,7 +216,8 @@ export default function Navbar() {
           text-transform: uppercase;
           font-weight: 600;
           white-space: nowrap;
-          line-height: 1.2em;
+          line-height: 1.2rem;
+          height: 1.2rem;
           display: block;
         }
         /* base state: subdued */
@@ -302,20 +303,19 @@ export default function Navbar() {
         /* ── COLLAPSED PILL ── */
         .nav-pill {
           pointer-events: all;
-          position: absolute;
+          position: fixed;
           top: 20px;
           left: 50%;
-          transform-origin: center top;
-          /* translateX handled inline since framer-motion transforms stack */
-          margin-left: -80px; /* half the pill width approx */
+          transform: translateX(-50%);
           background: rgba(250, 244, 232, 0.92);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           border: 1px solid rgba(192, 82, 42, 0.25);
           border-radius: 100px;
-          box-shadow: 0 8px 32px rgba(44, 26, 14, 0.12), 0 2px 8px rgba(192, 82, 42, 0.08);
+          box-shadow: 0 8px 32px rgba(44, 26, 14, 0.12);
           padding: 10px 22px;
           cursor: pointer;
+          z-index: 1001;
         }
         .pill-logo {
           display: flex;

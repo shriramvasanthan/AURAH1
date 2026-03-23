@@ -112,7 +112,7 @@ export default function HomePage() {
                         
                         <div className="hero-actions-group">
                             <Link href="/products" className="btn-gold">{content.hero_btn1_text}</Link>
-                            <Link href="/story" className="btn-outline">{content.hero_btn2_text}</Link>
+                            <Link href="/heritage" className="btn-outline">View Heritage</Link>
                         </div>
                     </motion.div>
                 </motion.div>
@@ -249,7 +249,7 @@ export default function HomePage() {
                     line-height: 0.9;
                     margin-bottom: 2rem;
                     letter-spacing: -0.03em;
-                    color: #2C1A0E;
+                    color: #2C1A0E !important;
                 }
                 .title-serif {
                     font-style: italic;
@@ -260,11 +260,12 @@ export default function HomePage() {
                     font-family: var(--font-montserrat);
                     font-size: clamp(0.9rem, 2.5vw, 1.15rem);
                     line-height: 1.8;
-                    color: var(--muted);
+                    color: #2C1A0E !important;
                     max-width: 560px;
                     margin: 0 auto 2.5rem;
                     font-style: italic;
                     font-weight: 500;
+                    opacity: 0.8;
                 }
                 .hero-actions-group {
                     display: flex;
@@ -328,11 +329,13 @@ export default function HomePage() {
                     font-family: var(--font-cinzel);
                     font-size: clamp(2rem, 5vw, 4rem);
                     letter-spacing: 0.05em;
+                    color: #2C1A0E;
                 }
                 .section-subtitle {
                     font-family: var(--font-montserrat);
                     font-size: 0.9rem;
-                    color: var(--muted);
+                    color: #2C1A0E;
+                    opacity: 0.7;
                     margin-top: 0.8rem;
                     font-weight: 500;
                     letter-spacing: 0.02em;
@@ -408,12 +411,14 @@ export default function HomePage() {
                     margin-bottom: 2.5rem;
                     line-height: 1;
                     letter-spacing: -0.01em;
+                    color: #2C1A0E;
                 }
                 .heritage-p {
                     font-family: var(--font-montserrat);
                     font-size: 1.05rem;
                     line-height: 1.8;
-                    color: var(--muted);
+                    color: #2C1A0E;
+                    opacity: 0.8;
                     font-style: italic;
                     font-weight: 500;
                 }

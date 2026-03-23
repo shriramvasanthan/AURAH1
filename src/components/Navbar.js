@@ -17,8 +17,13 @@ export default function Navbar() {
   const hoverTimerRef = useRef(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80);
+    const onScroll = () => {
+      const isScrolled = window.scrollY > 40;
+      setScrolled(isScrolled);
+      // console.log("SCROLL:", window.scrollY, "isScrolled:", isScrolled);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -35,8 +40,8 @@ export default function Navbar() {
     router.push('/');
   };
 
-  // Collapsed = scrolled AND not being hovered
-  const isCollapsed = scrolled && !hovered;
+  // Collapsed = scrolled
+  const isCollapsed = scrolled;
 
   const links = [
     { href: '/', label: 'Home' },
@@ -72,14 +77,11 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`nav-link ${hoveredLink === link.href ? 'nav-link--active' : ''}`}
+                className={`nav-link-prime ${hoveredLink === link.href ? 'nav-link-prime--active' : ''}`}
                 onMouseEnter={() => setHoveredLink(link.href)}
                 onMouseLeave={() => setHoveredLink(null)}
               >
-                <span className="nav-link-inner">
-                  <span className="nav-link-text">{link.label}</span>
-                  <span className="nav-link-text nav-link-clone" aria-hidden>{link.label}</span>
-                </span>
+                <span className="nav-link-prime-text">{link.label}</span>
               </Link>
             ))}
           </nav>
@@ -137,9 +139,10 @@ export default function Navbar() {
         /* ── FULL NAV ── */
         .nav-full {
           pointer-events: all;
-          padding: 1.6rem 0;
-          transition: opacity 0.35s ease, transform 0.35s ease;
-          background: transparent;
+          padding: 1rem 0;
+          transition: all 0.4s ease;
+          background: #FAF4E8;
+          border-bottom: 1px solid rgba(139, 69, 19, 0.1);
         }
         .nav-full--visible {
           opacity: 1;
@@ -194,40 +197,28 @@ export default function Navbar() {
           flex: 1;
           justify-content: center;
         }
-        .nav-link {
+        .nav-link-prime {
           text-decoration: none;
-          overflow: hidden;
           display: block;
-          height: 1.2rem;
           position: relative;
+          padding: 4px 8px;
         }
-        .nav-link-inner {
-          display: flex;
-          flex-direction: column;
-          transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .nav-link:hover .nav-link-inner {
-          transform: translateY(-50%);
-        }
-        .nav-link-text {
+        .nav-link-prime-text {
           font-family: var(--font-cinzel);
-          font-size: 0.62rem;
-          letter-spacing: 0.2em;
+          font-size: 13px;
+          letter-spacing: 0.15rem;
           text-transform: uppercase;
-          font-weight: 600;
-          white-space: nowrap;
-          line-height: 1.2rem;
-          height: 1.2rem;
+          font-weight: 700;
+          color: #666666;
+          transition: all 0.3s ease;
           display: block;
         }
-        /* base state: subdued */
-        .nav-link-text:first-child { color: var(--muted); }
-        /* clone (shown on hover via translateY): gold + italic */
-        .nav-link-clone {
+        .nav-link-prime:hover .nav-link-prime-text {
           color: var(--gold);
-          font-style: italic;
-          font-weight: 900;
-          letter-spacing: 0.25em;
+          transform: translateY(-2px);
+        }
+        .nav-link-prime--active .nav-link-prime-text {
+          color: var(--gold);
         }
 
         /* ── Action buttons ── */
@@ -302,20 +293,22 @@ export default function Navbar() {
 
         /* ── COLLAPSED PILL ── */
         .nav-pill {
-          pointer-events: all;
+          pointer-events: auto;
           position: fixed;
-          top: 20px;
+          top: 15px;
           left: 50%;
-          transform: translateX(-50%);
-          background: rgba(250, 244, 232, 0.92);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(192, 82, 42, 0.25);
-          border-radius: 100px;
-          box-shadow: 0 8px 32px rgba(44, 26, 14, 0.12);
-          padding: 10px 22px;
+          transform: translateX(-50%) !important;
+          background: #FAF4E8 !important;
+          border: 1.5px solid #C9A84C;
+          border-radius: 40px;
+          box-shadow: 0 10px 30px rgba(44, 26, 14, 0.2);
+          padding: 8px 24px;
           cursor: pointer;
-          z-index: 1001;
+          z-index: 999999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 140px;
         }
         .pill-logo {
           display: flex;

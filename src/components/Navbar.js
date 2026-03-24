@@ -4,10 +4,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import CartButton from '@/components/CartButton';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Navbar() {
-  const { itemCount } = useCart();
+  const { totalItems } = useCart();
   const { user, logout } = useAuth();
   const router = useRouter();
 
@@ -20,7 +21,6 @@ export default function Navbar() {
     const onScroll = () => {
       const isScrolled = window.scrollY > 40;
       setScrolled(isScrolled);
-      // console.log("SCROLL:", window.scrollY, "isScrolled:", isScrolled);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
@@ -40,7 +40,6 @@ export default function Navbar() {
     router.push('/');
   };
 
-  // Collapsed = scrolled
   const isCollapsed = scrolled;
 
   const links = [
@@ -87,6 +86,7 @@ export default function Navbar() {
           </nav>
 
           <div className="nav-desktop-actions">
+            <CartButton />
             {user ? (
               <>
                 <Link href="/dashboard" className="btn-nav">Dashboard</Link>
@@ -97,14 +97,10 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile cart */}
-          <Link href="/cart" className="mobile-cart-btn" aria-label={`Cart, ${itemCount} items`}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-            </svg>
-            {itemCount > 0 && <span className="mobile-cart-badge">{itemCount}</span>}
-          </Link>
+          {/* Mobile cart button */}
+          <div className="mobile-cart-btn">
+            <CartButton />
+          </div>
         </div>
       </div>
 
@@ -122,6 +118,9 @@ export default function Navbar() {
               <span className="pill-star">✦</span>
               <span className="pill-text">AURAH</span>
             </Link>
+            <div className="pill-cart">
+              <CartButton />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -133,7 +132,7 @@ export default function Navbar() {
           left: 0;
           right: 0;
           z-index: 1000;
-          pointer-events: none; /* let pill / full nav handle their own */
+          pointer-events: none;
         }
 
         /* ── FULL NAV ── */
@@ -189,7 +188,7 @@ export default function Navbar() {
           margin-top: 0.2rem;
         }
 
-        /* ── Nav links: flip-up roll hover effect ── */
+        /* Nav links */
         .nav-desktop-links {
           display: flex;
           align-items: center;
@@ -221,7 +220,7 @@ export default function Navbar() {
           color: var(--gold);
         }
 
-        /* ── Action buttons ── */
+        /* Action buttons */
         .nav-desktop-actions {
           display: flex;
           align-items: center;
@@ -247,7 +246,6 @@ export default function Navbar() {
           overflow: hidden;
           transition: color 0.3s;
         }
-        /* Wipe underline effect */
         .btn-nav::after {
           content: '';
           position: absolute;
@@ -261,37 +259,24 @@ export default function Navbar() {
         .btn-nav:hover::after { width: 100%; }
         .btn-nav:hover { color: var(--gold-shimmer, #e8c46a); }
 
-        /* ── Mobile cart button ── */
+        /* Mobile cart */
         .mobile-cart-btn {
           display: none;
-          position: relative;
-          color: var(--gold-dark);
-          text-decoration: none;
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          background: rgba(192, 82, 42, 0.07);
-          border: 1.5px solid rgba(192, 82, 42, 0.2);
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          transition: all 0.3s;
-          -webkit-tap-highlight-color: transparent;
-        }
-        .mobile-cart-btn:hover { border-color: var(--primary); background: rgba(192,82,42,0.13); }
-        .mobile-cart-badge {
-          position: absolute;
-          top: -3px; right: -3px;
-          background: var(--primary);
-          color: white;
-          font-size: 0.5rem;
-          font-weight: 800;
-          width: 17px; height: 17px;
-          border-radius: 50%;
-          display: flex; align-items: center; justify-content: center;
         }
 
-        /* ── COLLAPSED PILL ── */
+        /* Pill cart */
+        .pill-cart {
+          display: flex;
+          align-items: center;
+          margin-left: 12px;
+          padding-left: 12px;
+          border-left: 1px solid rgba(192,82,42,0.2);
+        }
+
+        /* COLLAPSED PILL */
         .nav-pill {
           pointer-events: auto;
           position: fixed;
@@ -302,7 +287,7 @@ export default function Navbar() {
           border: 1.5px solid #C9A84C;
           border-radius: 40px;
           box-shadow: 0 10px 30px rgba(44, 26, 14, 0.2);
-          padding: 8px 24px;
+          padding: 8px 20px;
           cursor: pointer;
           z-index: 999999;
           display: flex;
@@ -326,7 +311,7 @@ export default function Navbar() {
           line-height: 1;
         }
 
-        /* ── Breakpoints ── */
+        /* Breakpoints */
         @media (min-width: 1025px) {
           .mobile-cart-btn { display: none; }
         }

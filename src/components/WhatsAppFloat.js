@@ -9,21 +9,15 @@ export default function WhatsAppFloat() {
 
   return (
     <>
-      {/* Pulse Animation Style */}
       <style>{`
         @keyframes whatsappPulse {
-          0% {
-            box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6);
-          }
-          70% {
-            box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
-          }
-          100% {
-            box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
-          }
+          0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6); }
+          70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
         }
       `}</style>
 
+      {/* ✅ IMPORTANT: <a> tag is here */}
       <a
         href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
           'Hi! I have a question about AURAH products.'
